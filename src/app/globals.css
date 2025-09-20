@@ -5,6 +5,10 @@
   --foreground: #171717;
 }
 
+.header {
+  font-family: "Instrument Sans", sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
