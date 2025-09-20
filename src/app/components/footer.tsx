@@ -2,48 +2,62 @@ const Footer = () => {
   return (
     <footer className="relative px-8 py-16">
       <div className="max-w-2xl mx-auto">
-        {/* Contact Form Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            Contacteaza-ne
-          </h2>
-          <div className="text-lg text-gray-300 font-medium mb-8">VANTIX</div>
+        {/* Container (no global glass) */}
+        <div className="relative rounded-3xl p-10">
 
-          {/* Contact Form */}
-          <div className="space-y-4 mb-8">
-            <div
-              className="bg-black/20 backdrop-blur-md border border-white/10 rounded-full px-6 py-4 shadow-lg"
-              style={{ backdropFilter: "blur(10px) saturate(150%)" }}
-            >
-              <input
-                type="text"
-                placeholder="Numele Personal/ al Companiei"
-                className="w-full bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none"
-              />
+          {/* Contact Form Section */}
+          <div className="text-center mb-12 relative z-10">
+            <h2 className="text-2xl font-semibold text-white mb-2">
+              Contacteaza-ne
+            </h2>
+            <div className="text-lg text-gray-300 font-medium mb-8">VANTIX</div>
+
+            {/* Contact Form */}
+            <div className="space-y-4 mb-8">
+              <div
+                className="border rounded-full px-6 py-4 shadow-lg"
+                style={{
+                  background: "rgba(146, 232, 241, 0.06)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  backdropFilter: "blur(14px) saturate(170%) brightness(96%)",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Numele Personal/ al Companiei"
+                  className="w-full bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none"
+                />
+              </div>
+
+              <div
+                className="border rounded-full px-6 py-4 shadow-lg"
+                style={{
+                  background: "rgba(146, 232, 241, 0.06)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  backdropFilter: "blur(14px) saturate(170%) brightness(96%)",
+                }}
+              >
+                <input
+                  type="email"
+                  placeholder="Email Personal/ al Companiei"
+                  className="w-full bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none"
+                />
+              </div>
+
+              <button
+                className="relative overflow-hidden border rounded-full px-8 py-3 font-medium text-gray-900 transition-all"
+                style={{
+                  background: "rgba(255, 255, 255, 0.85)",
+                  border: "1px solid rgba(255, 255, 255, 0.9)",
+                }}
+              >
+                Trimite mesaj
+              </button>
             </div>
-
-            <div
-              className="bg-black/20 backdrop-blur-md border border-white/10 rounded-full px-6 py-4 shadow-lg"
-              style={{ backdropFilter: "blur(10px) saturate(150%)" }}
-            >
-              <input
-                type="email"
-                placeholder="Email Personal/ al Companiei"
-                className="w-full bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none"
-              />
-            </div>
-
-            <button className="bg-transparent border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 px-8 py-3 rounded-full font-medium">
-              Trimite mesaj
-            </button>
           </div>
-        </div>
 
         {/* Contact Info Card */}
-        <div
-          className="bg-black/20 backdrop-blur-md border border-white/10 rounded-3xl p-8 mb-8 shadow-lg"
-          style={{ backdropFilter: "blur(10px) saturate(150%)" }}
-        >
+        <div className="rounded-3xl p-8 mb-8 bg-black/30 border border-white/10 shadow-lg">
           <div className="space-y-6">
             <div>
               <h3 className="text-gray-300 text-sm mb-2">Numar de Contact:</h3>
@@ -113,6 +127,7 @@ const Footer = () => {
           </p>
         </div>
       </div>
+    </div>
     </footer>
   );
 };
