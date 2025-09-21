@@ -83,7 +83,7 @@ const GlassHeader = () => {
           <div className="absolute inset-0 flex items-center justify-center">
             <span
               className={`
-                  font-normal text-xl header leading-normal tracking-wide transition-all duration-300 relative z-10
+                  font-normal text-2xl header leading-normal tracking-wide transition-all duration-300 relative z-10
                   ${
                     scrolled
                       ? "text-white opacity-100"

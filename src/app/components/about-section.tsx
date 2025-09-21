@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useInView, cubicBezier } from "framer-motion";
 import Image from "next/image";
 import AboutAdi from "../../assets/photos/about-adi.webp";
 import AboutAlex from "../../assets/photos/about-alex.webp";
@@ -10,51 +10,71 @@ import Logo from "../../assets/photos/vantix-logo.svg";
 const AboutSection = () => {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [scrollY, setScrollY] = useState(0);
-
-  // Track scroll position
+  // Manual scroll-driven logo transform (robust across layout shifts)
+  const [logoStyle, setLogoStyle] = useState({ y: 0, scale: 1, opacity: 0 });
+  const [logoVisible, setLogoVisible] = useState(false);
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    let raf = 0;
+    const onScroll = () => {
+      if (!ref.current || typeof window === "undefined") return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = ref.current!.getBoundingClientRect();
+        const sectionTop = window.scrollY + rect.top;
+        const sectionHeight = rect.height;
+        const sectionBottom = sectionTop + sectionHeight;
+        const viewTop = window.scrollY;
+        const vh = window.innerHeight;
+        const viewBottom = viewTop + vh;
+
+        // If outside section, hide logo
+        if (viewBottom <= sectionTop || viewTop >= sectionBottom) {
+          setLogoVisible(false);
+          setLogoStyle((s) => (s.opacity === 0 ? s : { y: 0, scale: 1, opacity: 0 }));
+          return;
+        }
+
+        // Progress from 0 (section enters) to 1 (section leaves)
+        const total = sectionHeight + vh; // span across full section + viewport
+        const progress = Math.min(
+          1,
+          Math.max(0, (viewBottom - sectionTop) / total)
+        );
+
+        // Travel almost a full viewport (leave 96px margin top/bottom)
+        const travel = Math.max(400, vh - 192);
+        const y = progress * travel;
+        const scale = 0.9 + progress * 0.5; // 0.9 -> 1.4
+        // Fade near the top and bottom edges so it fades under adjacent sections
+        const fadeEdge = 0.08; // 8% of progress at top/bottom
+        let opacity = 1;
+        if (progress < fadeEdge) {
+          opacity = Math.max(0, progress / fadeEdge);
+        } else if (progress > 1 - fadeEdge) {
+          opacity = Math.max(0, (1 - progress) / fadeEdge);
+        }
+
+        setLogoVisible(true);
+        setLogoStyle({ y, scale, opacity });
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
-
-  // Calculate logo position based on scroll
-  const getLogoTransform = () => {
-    if (!ref.current) return { y: 0, scale: 1, opacity: 0 };
-
-    const rect = ref.current.getBoundingClientRect();
-    const sectionTop = window.scrollY + rect.top;
-    const sectionHeight = rect.height;
-    const scrollProgress =
-      (scrollY - sectionTop + window.innerHeight * 0.5) / sectionHeight;
-
-    // Only show logo when section is in view
-    if (scrollProgress < 0 || scrollProgress > 1.2) {
-      return { y: 0, scale: 1, opacity: 0 };
-    }
-
-    const y = scrollProgress * 400; // Move down 400px as we scroll
-    const scale = 0.8 + scrollProgress * 0.6; // Scale from 0.8 to 1.4
-    const opacity =
-      scrollProgress < 0.1
-        ? 0
-        : scrollProgress > 1
-        ? Math.max(0, 1.2 - scrollProgress)
-        : 1;
-
-    return { y, scale, opacity };
-  };
-
-  const logoTransform = getLogoTransform();
 
   return (
     <section
       ref={ref}
-      className="min-h-screen bg-black relative overflow-hidden py-20"
+      className="min-h-screen bg-black relative overflow-hidden isolate py-24"
     >
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
         <motion.div
           className="absolute top-20 left-10 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
           animate={{
@@ -64,7 +84,7 @@ const AboutSection = () => {
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: cubicBezier(0.4, 0, 0.2, 1),
           }}
         />
         <motion.div
@@ -76,18 +96,44 @@ const AboutSection = () => {
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: cubicBezier(0.4, 0, 0.2, 1),
           }}
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8 min-h-screen">
+      {/* Scrolling Logo - Fixed within viewport, visible only during this section */}
+      <motion.div
+        className="fixed left-1/2 top-24 -translate-x-1/2 z-0 pointer-events-none"
+        style={{
+          translateY: logoStyle.y,
+          scale: logoStyle.scale,
+          opacity: logoStyle.opacity,
+          display: logoVisible ? "block" : "none",
+          willChange: "transform, opacity",
+        }}
+      >
+        <motion.div
+          className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24"
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 8, repeat: Infinity, ease: (t: number) => t }}
+        >
+          <Image
+            src={Logo}
+            alt="Vantix Logo"
+            width={96}
+            height={96}
+            className="w-full h-full object-contain filter drop-shadow-lg"
+          />
+        </motion.div>
+      </motion.div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-8">
         {/* Title */}
         <motion.div
           className="text-center pt-8 mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: cubicBezier(0.16, 1, 0.3, 1) }}
         >
           <h2 className="text-2xl md:text-4xl font-light text-white tracking-wider">
             Despre
@@ -108,7 +154,7 @@ const AboutSection = () => {
               }
               transition={{
                 duration: 1,
-                ease: [0.6, -0.05, 0.01, 0.99],
+                ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
                 delay: 0.2,
               }}
               whileHover={{
@@ -132,7 +178,7 @@ const AboutSection = () => {
               }
               transition={{
                 duration: 0.8,
-                ease: [0.6, -0.05, 0.01, 0.99],
+                ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
                 delay: 0.5,
               }}
               whileHover={{ scale: 1.02 }}
@@ -162,7 +208,7 @@ const AboutSection = () => {
               }
               transition={{
                 duration: 0.8,
-                ease: [0.6, -0.05, 0.01, 0.99],
+                ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
                 delay: 0.8,
               }}
               whileHover={{ scale: 1.02 }}
@@ -192,7 +238,7 @@ const AboutSection = () => {
               }
               transition={{
                 duration: 1,
-                ease: [0.6, -0.05, 0.01, 0.99],
+                ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
                 delay: 0.4,
               }}
               whileHover={{
@@ -206,64 +252,7 @@ const AboutSection = () => {
         </div>
       </div>
 
-      {/* Scrolling Logo - Fixed position */}
-      <div
-        className="fixed left-1/2 top-32 z-30 pointer-events-none transition-all duration-100 ease-out"
-        style={{
-          transform: `translate(-50%, ${logoTransform.y}px) scale(${logoTransform.scale})`,
-          opacity: logoTransform.opacity,
-        }}
-      >
-        <motion.div
-          className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24"
-          animate={{
-            rotate: [0, 360],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
-          <Image
-            src={Logo}
-            alt="Vantix Logo"
-            width={96}
-            height={96}
-            className="w-full h-full object-contain filter drop-shadow-lg"
-          />
-        </motion.div>
-      </div>
-
-      {/* Static Center Logo (fallback) */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-        initial={{ opacity: 0, rotate: -180, scale: 0.5 }}
-        animate={
-          isInView
-            ? { opacity: 0.3, rotate: 0, scale: 1 }
-            : { opacity: 0, rotate: -180, scale: 0.5 }
-        }
-        transition={{ duration: 1, ease: "easeOut", delay: 1.2 }}
-      >
-        <motion.div
-          className="w-12 h-12 opacity-30"
-          animate={{ rotate: [0, 90, 180, 270, 360] }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
-          <Image
-            src={Logo}
-            alt="Vantix Logo Background"
-            width={48}
-            height={48}
-            className="w-full h-full object-contain"
-          />
-        </motion.div>
-      </motion.div>
+      {/* Removed static center fallback to avoid overlap */}
 
       {/* Subtle grid pattern overlay */}
       <div
