@@ -30,7 +30,9 @@ const AboutSection = () => {
         // If outside section, hide logo
         if (viewBottom <= sectionTop || viewTop >= sectionBottom) {
           setLogoVisible(false);
-          setLogoStyle((s) => (s.opacity === 0 ? s : { y: 0, scale: 1, opacity: 0 }));
+          setLogoStyle((s) =>
+            s.opacity === 0 ? s : { y: 0, scale: 1, opacity: 0 }
+          );
           return;
         }
 
@@ -190,8 +192,6 @@ const AboutSection = () => {
                   fill
                   className="object-cover rounded-3xl"
                 />
-                {/* Hover effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
               </div>
             </motion.div>
           </div>
@@ -220,8 +220,6 @@ const AboutSection = () => {
                   fill
                   className="object-cover rounded-3xl"
                 />
-                {/* Hover effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
               </div>
             </motion.div>
           </div>
