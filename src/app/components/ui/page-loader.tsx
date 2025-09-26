@@ -10,10 +10,44 @@ interface PageLoaderProps {
 
 const PageLoader = ({ loading, children }: PageLoaderProps) => {
   const [isVisible, setIsVisible] = useState(loading);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [particlePositions, setParticlePositions] = useState<Array<{left: number, top: number}>>([]);
+
+  const loadingSteps = [
+    "Initializing DataSight...",
+    "Loading Analytics Engine...",
+    "Connecting to Database...",
+    "Preparing Dashboard...",
+    "Ready!"
+  ];
+
+  useEffect(() => {
+    // Generate particle positions on client side only
+    const positions = Array.from({ length: 12 }, () => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+    }));
+    setParticlePositions(positions);
+  }, []);
+
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setCurrentStep(prev => {
+          if (prev < loadingSteps.length - 1) {
+            return prev + 1;
+          }
+          return prev;
+        });
+      }, 50);
+
+      return () => clearInterval(interval);
+    }
+  }, [loading, loadingSteps.length]);
 
   useEffect(() => {
     if (!loading) {
-      const timer = setTimeout(() => setIsVisible(false), 800);
+      const timer = setTimeout(() => setIsVisible(false), 100);
       return () => clearTimeout(timer);
     } else {
       setIsVisible(true);
@@ -27,63 +61,121 @@ const PageLoader = ({ loading, children }: PageLoaderProps) => {
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center"
             style={{
-              background: "radial-gradient(circle at center, #000000 0%, #111111 100%)"
+              background: "linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #111111 100%)"
             }}
             initial={{ opacity: 1 }}
             exit={{
               opacity: 0,
-              transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] }
+              scale: 1.1,
+              transition: { duration: 0.15, ease: [0.76, 0, 0.24, 1] }
             }}
           >
-            <div className="relative">
+            {/* Animated Background Particles */}
+            <div className="absolute inset-0 overflow-hidden">
+              {particlePositions.map((position, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-cyan-400/20 rounded-full"
+                  style={{
+                    left: `${position.left}%`,
+                    top: `${position.top}%`,
+                  }}
+                  animate={{
+                    y: [-20, 20, -20],
+                    x: [-10, 10, -10],
+                    opacity: [0.2, 0.8, 0.2],
+                    scale: [0.5, 1.2, 0.5],
+                  }}
+                  transition={{
+                    duration: 3 + (i % 3) * 0.5,
+                    repeat: Infinity,
+                    delay: (i % 4) * 0.5,
+                    ease: "easeInOut",
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="relative text-center">
+              {/* Main Logo Animation */}
               <motion.div
-                className="text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
               >
                 <motion.h1
-                  className="text-6xl md:text-8xl font-bold text-white mb-4 tracking-wider"
+                  className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-wider"
                   animate={{
                     textShadow: [
-                      "0 0 20px rgba(146, 232, 241, 0.3)",
-                      "0 0 40px rgba(146, 232, 241, 0.6)",
-                      "0 0 20px rgba(146, 232, 241, 0.3)"
+                      "0 0 30px rgba(146, 232, 241, 0.4)",
+                      "0 0 60px rgba(146, 232, 241, 0.7)",
+                      "0 0 30px rgba(146, 232, 241, 0.4)"
                     ]
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 2.5, repeat: Infinity }}
                 >
                   VANTIX
                 </motion.h1>
 
-                <div className="w-64 h-1 bg-gray-800 rounded-full mx-auto overflow-hidden">
+                {/* Rotating Ring */}
+                <div className="relative mx-auto mb-8 w-32 h-32 flex items-center justify-center">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 2, ease: "easeInOut" }}
+                    className="absolute inset-0 border-4 border-transparent border-t-cyan-400 border-r-cyan-400/50 rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                   />
+                  <motion.div
+                    className="absolute inset-2 border-2 border-transparent border-b-blue-400 border-l-blue-400/50 rounded-full"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="w-4 h-4 bg-cyan-400 rounded-full shadow-lg shadow-cyan-400/50" />
                 </div>
 
-                <motion.p
-                  className="text-gray-400 mt-4 text-lg font-light"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
+                {/* Dynamic Loading Text */}
+                <motion.div
+                  className="h-12 flex items-center justify-center"
+                  key={currentStep}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.15 }}
                 >
-                  Loading Experience...
-                </motion.p>
+                  <p className="text-gray-300 text-lg font-light">
+                    {loadingSteps[currentStep]}
+                  </p>
+                </motion.div>
+
+                {/* Progress Dots */}
+                <div className="flex justify-center space-x-2 mt-4">
+                  {loadingSteps.map((_, index) => (
+                    <motion.div
+                      key={index}
+                      className={`w-2 h-2 rounded-full ${
+                        index <= currentStep ? 'bg-cyan-400' : 'bg-gray-600'
+                      }`}
+                      animate={{
+                        scale: index === currentStep ? [1, 1.3, 1] : 1,
+                      }}
+                      transition={{
+                        duration: 0.6,
+                        repeat: index === currentStep ? Infinity : 0,
+                      }}
+                    />
+                  ))}
+                </div>
               </motion.div>
             </div>
 
+            {/* Subtle Grid Background */}
             <div
-              className="absolute inset-0 opacity-5"
+              className="absolute inset-0 opacity-3"
               style={{
                 backgroundImage: `
-                  linear-gradient(rgba(146, 232, 241, 0.1) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(146, 232, 241, 0.1) 1px, transparent 1px)
+                  linear-gradient(rgba(146, 232, 241, 0.05) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(146, 232, 241, 0.05) 1px, transparent 1px)
                 `,
-                backgroundSize: "50px 50px",
+                backgroundSize: "40px 40px",
               }}
             />
           </motion.div>
@@ -95,7 +187,7 @@ const PageLoader = ({ loading, children }: PageLoaderProps) => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+            transition={{ duration: 0.15, ease: [0.76, 0, 0.24, 1] }}
           >
             {children}
           </motion.div>

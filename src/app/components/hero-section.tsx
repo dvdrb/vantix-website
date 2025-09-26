@@ -157,8 +157,9 @@ const DataSightHero = () => {
                 }}
               />
               {/* Header */}
-              <div className="text-center mt-6 mb-8 relative z-10">
+              <header className="text-center mt-6 mb-8 relative z-10">
                 <h1
+                  id="hero-title"
                   className={`text-white leading-normal font-medium tracking-wide ${
                     isMobile ? "text-3xl" : "text-4xl"
                   }`}
@@ -169,10 +170,11 @@ const DataSightHero = () => {
                   className={`text-gray-300 font-medium leading-normal text-white ${
                     isMobile ? "text-lg" : "text-xl"
                   }`}
+                  role="doc-subtitle"
                 >
                   Solution
                 </p>
-              </div>
+              </header>
 
               {/* Navigation Buttons */}
               <div className="flex justify-center gap-4 mb-8 relative z-10">

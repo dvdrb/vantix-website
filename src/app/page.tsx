@@ -41,18 +41,23 @@ export default function Home() {
       <MobilePullToRefresh onRefresh={handleRefresh}>
         <NavigationMenu currentSection={currentSection} />
 
-        <div data-scroll-id="hero" id="hero">
-          <DataSightHero />
-        </div>
-        <div data-scroll-id="about" id="about">
-          <AboutSection />
-        </div>
-        <div data-scroll-id="achievements" id="achievements">
-          <AchievementsSection />
-        </div>
-        <div data-scroll-id="solutions" id="solutions">
-          <DataSightShowcase />
-        </div>
+        <main role="main">
+          <section data-scroll-id="hero" id="hero" aria-labelledby="hero-title">
+            <DataSightHero />
+          </section>
+
+          <section data-scroll-id="about" id="about" aria-labelledby="about-title">
+            <AboutSection />
+          </section>
+
+          <section data-scroll-id="achievements" id="achievements" aria-labelledby="achievements-title">
+            <AchievementsSection />
+          </section>
+
+          <section data-scroll-id="solutions" id="solutions" aria-labelledby="solutions-title">
+            <DataSightShowcase />
+          </section>
+        </main>
       </MobilePullToRefresh>
     </PageLoader>
   );

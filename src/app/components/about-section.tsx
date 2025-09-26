@@ -133,16 +133,22 @@ const AboutSection = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-8">
         {/* Title */}
-        <motion.div
+        <motion.header
           className="text-center pt-8 mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6, ease: cubicBezier(0.16, 1, 0.3, 1) }}
         >
-          <h2 className="text-2xl md:text-4xl font-light text-white tracking-wider">
-            Despre
+          <h2
+            id="about-title"
+            className="text-2xl md:text-4xl font-light text-white tracking-wider"
+          >
+            Despre VANTIX
           </h2>
-        </motion.div>
+          <p className="sr-only">
+            Echipa VANTIX - Adrian și Alexandru Hănțăscu, co-fondatorii companiei de soluții software inovative
+          </p>
+        </motion.header>
 
         {/* Conditional Layout - Desktop 2x2 Grid vs Mobile Vertical Stack */}
         {isMobile ? (
