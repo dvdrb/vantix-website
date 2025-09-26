@@ -1,46 +1,51 @@
 "use client";
 
-import {
-  Backdrop,
-  Environment,
-  MeshTransmissionMaterial,
-  Text,
-} from "@react-three/drei";
-import type { ThreeElements } from "@react-three/fiber";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { damp } from "maath/easing";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 
-// 3D Fluid Glass Sphere Component
-type ScrollProps = { scrolled: boolean };
+// Magnetic cursor hook
+function useMagneticCursor(
+  ref: React.RefObject<HTMLElement | null>,
+  intensity = 0.3
+) {
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
 
-// Main 3D Scene Component
-function FluidGlassScene({ scrolled }: ScrollProps) {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 3], fov: 45 }}
-      dpr={[1, 2]}
-      style={{
-        width: "200px",
-        height: "60px",
-        borderRadius: "124px",
-        overflow: "hidden",
-      }}
-    >
-      {/* Environment and Lighting */}
-      <Environment preset="city" background={false} />
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={0.6} />
-      <pointLight position={[-5, -5, -5]} intensity={0.3} color="#92e8f1" />
-      {/* 3D Text */}
-      VANTIX
-    </Canvas>
-  );
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      const distance = Math.sqrt(x * x + y * y);
+      const maxDistance = Math.max(rect.width, rect.height);
+
+      if (distance < maxDistance) {
+        const factor = (maxDistance - distance) / maxDistance;
+        element.style.transform = `translate(${x * intensity * factor}px, ${
+          y * intensity * factor
+        }px)`;
+      }
+    };
+
+    const handleMouseLeave = () => {
+      element.style.transform = "translate(0, 0)";
+    };
+
+    element.addEventListener("mousemove", handleMouseMove);
+    element.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      element.removeEventListener("mousemove", handleMouseMove);
+      element.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [ref, intensity]);
 }
 
 const GlassHeader = () => {
   const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useMagneticCursor(headerRef, 0.2);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,8 +62,9 @@ const GlassHeader = () => {
       {/* Fixed Header */}
       <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
         <div
+          ref={headerRef}
           className={`
-              relative overflow-hidden transition-all duration-500 ease-out h-[84px] w-[194px]
+              relative overflow-hidden transition-all duration-500 ease-out h-[84px] w-[194px] cursor-pointer
               ${
                 scrolled
                   ? "shadow-2xl shadow-cyan-500/20"
@@ -73,12 +79,10 @@ const GlassHeader = () => {
               ? "blur(20px) saturate(180%) brightness(108%)"
               : "blur(15px) saturate(150%) brightness(103%)",
           }}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         >
-          {/* 3D Fluid Glass Scene */}
-          <div className="absolute inset-0">
-            <FluidGlassScene scrolled={scrolled} />
-          </div>
-
           {/* Fallback content for when 3D doesn't load */}
           <div className="absolute inset-0 flex items-center justify-center">
             <span

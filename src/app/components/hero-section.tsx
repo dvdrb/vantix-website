@@ -11,9 +11,11 @@ import Decor5 from "../../assets/photos/decor-5.webp";
 import Decor6 from "../../assets/photos/decor-6.webp";
 
 import { useSpring, useSprings, animated } from "@react-spring/web";
+import ParticleSystem from "./ui/particle-system";
+import { useMobileDetection } from "../hooks/useMobileDetection";
 
 const DataSightHero = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const { isMobile, orientation } = useMobileDetection();
   const cardSpring = useSpring({
     from: { opacity: 0, transform: "translateY(20px) scale(0.98)" },
     to: { opacity: 1, transform: "translateY(0px) scale(1)" },
@@ -93,23 +95,23 @@ const DataSightHero = () => {
     return () => observer.disconnect();
   }, [leftApi, rightApi, leftImages.length]);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % 3); // Assuming 3 slides
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + 3) % 3);
-  };
-
-  return (
+  const heroContent = (
     <div
       ref={sectionRef}
-      className=" bg-black  mt-28 relative justify-center z-10 items-end overflow-hidden  flex  "
+      className={`bg-black  relative justify-center mt-28  z-10 items-end overflow-hidden flex`}
     >
+      {/* Subtle Particle System Background */}
+      <ParticleSystem
+        count={8}
+        color="rgba(146, 232, 241, 0.2)"
+        speed={0.2}
+        className="z-0"
+      />
+
       {/* Decorative Images Placeholders */}
 
       {/* Left decorative image would go here */}
-      <div className="flex items-end ">
+      <div className=" items-end hidden lg:flex ">
         {leftImages.map((img, i) => (
           <animated.div key={`left-${i}`} style={leftSprings[i]}>
             <Image
@@ -127,7 +129,9 @@ const DataSightHero = () => {
           {/* Main Glass Container (match header, slightly darker) */}
           <animated.div style={cardSpring}>
             <div
-              className="relative overflow-hidden mb-5   rounded-3xl px-32 pt-9 shadow-2xl shadow-cyan-500/20 border"
+              className={`relative overflow-hidden mb-5 rounded-3xl shadow-2xl shadow-cyan-500/20 border ${
+                isMobile ? "px-6 pt-6" : "px-32 pt-9"
+              }`}
               style={{
                 background: "rgba(146, 232, 241, 0.08)",
                 border: "1px solid rgba(196, 213, 215, 0.18)",
@@ -154,10 +158,18 @@ const DataSightHero = () => {
               />
               {/* Header */}
               <div className="text-center mt-6 mb-8 relative z-10">
-                <h1 className=" text-white  leading-normal text-4xl font-medium  tracking-wide">
+                <h1
+                  className={`text-white leading-normal font-medium tracking-wide ${
+                    isMobile ? "text-3xl" : "text-4xl"
+                  }`}
+                >
                   DATASIGHT
                 </h1>
-                <p className="text-gray-300 text-xl font-medium leading-normal text-white">
+                <p
+                  className={`text-gray-300 font-medium leading-normal text-white ${
+                    isMobile ? "text-lg" : "text-xl"
+                  }`}
+                >
                   Solution
                 </p>
               </div>
@@ -177,7 +189,9 @@ const DataSightHero = () => {
                     }}
                   />
                   <button
-                    className="border rounded-lg  px-10 py-3 text-gray-100 transition-all duration-300 shadow-lg shadow-cyan-500/10 hover:shadow-2xl hover:shadow-cyan-500/20 relative overflow-hidden"
+                    className={`border rounded-lg transition-all duration-300 shadow-lg shadow-cyan-500/10 hover:shadow-2xl hover:shadow-cyan-500/20 relative overflow-hidden ${
+                      isMobile ? "px-3 py-2.5 text-sm" : "px-10 py-3 text-base"
+                    }`}
                     style={{
                       background: "rgba(146, 232, 241, 0.08)",
                       border: "1px solid rgba(146, 232, 241, 0.18)",
@@ -185,7 +199,7 @@ const DataSightHero = () => {
                         "blur(15px) saturate(150%) brightness(103%)",
                     }}
                   >
-                    <span className="relative text-base font-medium leading-normal z-10">
+                    <span className="relative font-medium leading-normal z-10 text-gray-100">
                       Mai multe
                     </span>
                     {/* Button gradient overlay (same as header) */}
@@ -200,7 +214,9 @@ const DataSightHero = () => {
                 </animated.div>
                 <animated.div className="relative" style={ctaRightSpring}>
                   <button
-                    className="group relative overflow-hidden inline-flex items-center justify-center rounded-lg border-2 border-[#156786] px-6 py-3 text-white transition-all duration-400 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-400/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+                    className={`group relative overflow-hidden inline-flex items-center justify-center rounded-lg border-2 border-[#156786] text-white transition-all duration-400 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-400/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                      isMobile ? "px-3 py-2.5 text-sm" : "px-6 py-3 text-base"
+                    }`}
                     style={{
                       background:
                         "linear-gradient(135deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 1) 100%)",
@@ -229,51 +245,16 @@ const DataSightHero = () => {
 
               {/* Highlights Section */}
               <div className="text-center relative z-10">
-                <h2 className="text-3xl text-white leading-normal font-medium ">
+                <h2
+                  className={`text-white leading-normal font-medium ${
+                    isMobile ? "text-2xl" : "text-3xl"
+                  }`}
+                >
                   Get the highlights.
                 </h2>
 
                 {/* Laptop Display Container */}
                 <div className="relative my-6">
-                  {/* Navigation Arrows */}
-                  <button
-                    onClick={prevSlide}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 text-white/60 hover:text-white transition-colors"
-                  >
-                    <svg
-                      className="w-8 h-8"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </button>
-
-                  <button
-                    onClick={nextSlide}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 text-white/60 hover:text-white transition-colors"
-                  >
-                    <svg
-                      className="w-8 h-8"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
-
                   <div className="relative mx-auto max-w-xl ">
                     {/* Glow behind laptop */}
                     <div
@@ -287,7 +268,9 @@ const DataSightHero = () => {
                     />
 
                     <Image
-                      className="h-[300px] object-contain"
+                      className={`object-contain ${
+                        isMobile ? "h-[200px]" : "h-[300px]"
+                      }`}
                       src={Laptop}
                       alt="Software layout"
                     />
@@ -303,7 +286,7 @@ const DataSightHero = () => {
       </div>
 
       {/* Right decorative image would go here */}
-      <div className="flex items-end ">
+      <div className="lg:flex hidden items-end ">
         {rightImages.map((img, i) => (
           <animated.div key={`right-${i}`} style={rightSprings[i]}>
             <Image
@@ -316,6 +299,8 @@ const DataSightHero = () => {
       </div>
     </div>
   );
+
+  return heroContent;
 };
 
 export default DataSightHero;

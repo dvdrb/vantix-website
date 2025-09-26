@@ -6,8 +6,10 @@ import Image from "next/image";
 import AboutAdi from "../../assets/photos/about-adi.webp";
 import AboutAlex from "../../assets/photos/about-alex.webp";
 import Logo from "../../assets/photos/vantix-logo.svg";
+import { useMobileDetection } from "../hooks/useMobileDetection";
 
 const AboutSection = () => {
+  const { isMobile } = useMobileDetection();
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   // Manual scroll-driven logo transform (robust across layout shifts)
@@ -142,48 +144,24 @@ const AboutSection = () => {
           </h2>
         </motion.div>
 
-        {/* Main 2x2 Grid Layout */}
-        <div className="grid grid-cols-2 gap-12 min-h-[75vh]">
-          {/* Top Left - VAN text */}
-          <div className="flex items-center justify-start">
-            <motion.h1
-              className="text-[5rem] md:text-[7rem] lg:text-[9rem] xl:text-[10rem] font-bold text-white tracking-wider leading-none"
-              initial={{ opacity: 0, x: -100, y: -50 }}
-              animate={
-                isInView
-                  ? { opacity: 1, x: 0, y: 0 }
-                  : { opacity: 0, x: -100, y: -50 }
-              }
-              transition={{
-                duration: 1,
-                ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
-                delay: 0.2,
-              }}
-              whileHover={{
-                scale: 1.05,
-                textShadow: "0 0 30px rgba(34, 211, 238, 0.5)",
-              }}
-            >
-              VAN
-            </motion.h1>
-          </div>
-
-          {/* Top Right - Adrian Image */}
-          <div className="flex items-center justify-end">
+        {/* Conditional Layout - Desktop 2x2 Grid vs Mobile Vertical Stack */}
+        {isMobile ? (
+          /* Mobile: Simple vertical stack of images */
+          <div className="flex flex-col items-center gap-8 min-h-[75vh] justify-center">
+            {/* Adrian Image */}
             <motion.div
-              className="relative w-full max-w-md aspect-[4/4]"
-              initial={{ opacity: 0, x: 100, y: -50 }}
+              className="relative w-full max-w-sm aspect-[4/4]"
+              initial={{ opacity: 0, y: 30 }}
               animate={
                 isInView
-                  ? { opacity: 1, x: 0, y: 0 }
-                  : { opacity: 0, x: 100, y: -50 }
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 30 }
               }
               transition={{
                 duration: 0.8,
                 ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
-                delay: 0.5,
+                delay: 0.2,
               }}
-              whileHover={{ scale: 1.02 }}
             >
               <div className="relative w-full h-full group">
                 <Image
@@ -194,24 +172,21 @@ const AboutSection = () => {
                 />
               </div>
             </motion.div>
-          </div>
 
-          {/* Bottom Left - Alexandru Image */}
-          <div className="flex items-center justify-start">
+            {/* Alexandru Image */}
             <motion.div
-              className="relative w-full max-w-md aspect-[4/4]"
-              initial={{ opacity: 0, x: -100, y: 50 }}
+              className="relative w-full max-w-sm aspect-[4/4]"
+              initial={{ opacity: 0, y: 30 }}
               animate={
                 isInView
-                  ? { opacity: 1, x: 0, y: 0 }
-                  : { opacity: 0, x: -100, y: 50 }
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 30 }
               }
               transition={{
                 duration: 0.8,
                 ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
-                delay: 0.8,
+                delay: 0.5,
               }}
-              whileHover={{ scale: 1.02 }}
             >
               <div className="relative w-full h-full group">
                 <Image
@@ -223,31 +198,114 @@ const AboutSection = () => {
               </div>
             </motion.div>
           </div>
+        ) : (
+          /* Desktop: 2x2 Grid Layout */
+          <div className="grid grid-cols-2 gap-12 min-h-[75vh]">
+            {/* Top Left - VAN text */}
+            <div className="flex items-center justify-start">
+              <motion.h1
+                className="text-[5rem] md:text-[7rem] lg:text-[9rem] xl:text-[10rem] font-bold text-white tracking-wider leading-none"
+                initial={{ opacity: 0, x: -100, y: -50 }}
+                animate={
+                  isInView
+                    ? { opacity: 1, x: 0, y: 0 }
+                    : { opacity: 0, x: -100, y: -50 }
+                }
+                transition={{
+                  duration: 1,
+                  ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
+                  delay: 0.2,
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  textShadow: "0 0 30px rgba(34, 211, 238, 0.5)",
+                }}
+              >
+                VAN
+              </motion.h1>
+            </div>
 
-          {/* Bottom Right - TIX text */}
-          <div className="flex items-center justify-end">
-            <motion.h1
-              className="text-[5rem] md:text-[7rem] lg:text-[9rem] xl:text-[10rem] font-bold text-white tracking-wider leading-none"
-              initial={{ opacity: 0, x: 100, y: 50 }}
-              animate={
-                isInView
-                  ? { opacity: 1, x: 0, y: 0 }
-                  : { opacity: 0, x: 100, y: 50 }
-              }
-              transition={{
-                duration: 1,
-                ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
-                delay: 0.4,
-              }}
-              whileHover={{
-                scale: 1.05,
-                textShadow: "0 0 30px rgba(34, 211, 238, 0.5)",
-              }}
-            >
-              TIX
-            </motion.h1>
+            {/* Top Right - Adrian Image */}
+            <div className="flex items-center justify-end">
+              <motion.div
+                className="relative w-full max-w-md aspect-[4/4]"
+                initial={{ opacity: 0, x: 100, y: -50 }}
+                animate={
+                  isInView
+                    ? { opacity: 1, x: 0, y: 0 }
+                    : { opacity: 0, x: 100, y: -50 }
+                }
+                transition={{
+                  duration: 0.8,
+                  ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
+                  delay: 0.5,
+                }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="relative w-full h-full group">
+                  <Image
+                    src={AboutAdi}
+                    alt="Adrian Hănțăscu - co-fondator vantix"
+                    fill
+                    className="object-cover rounded-3xl"
+                  />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Bottom Left - Alexandru Image */}
+            <div className="flex items-center justify-start">
+              <motion.div
+                className="relative w-full max-w-md aspect-[4/4]"
+                initial={{ opacity: 0, x: -100, y: 50 }}
+                animate={
+                  isInView
+                    ? { opacity: 1, x: 0, y: 0 }
+                    : { opacity: 0, x: -100, y: 50 }
+                }
+                transition={{
+                  duration: 0.8,
+                  ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
+                  delay: 0.8,
+                }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="relative w-full h-full group">
+                  <Image
+                    src={AboutAlex}
+                    alt="Alexandru Hănțăscu - co-fondator vantix"
+                    fill
+                    className="object-cover rounded-3xl"
+                  />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Bottom Right - TIX text */}
+            <div className="flex items-center justify-end">
+              <motion.h1
+                className="text-[5rem] md:text-[7rem] lg:text-[9rem] xl:text-[10rem] font-bold text-white tracking-wider leading-none"
+                initial={{ opacity: 0, x: 100, y: 50 }}
+                animate={
+                  isInView
+                    ? { opacity: 1, x: 0, y: 0 }
+                    : { opacity: 0, x: 100, y: 50 }
+                }
+                transition={{
+                  duration: 1,
+                  ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
+                  delay: 0.4,
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  textShadow: "0 0 30px rgba(34, 211, 238, 0.5)",
+                }}
+              >
+                TIX
+              </motion.h1>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Removed static center fallback to avoid overlap */}

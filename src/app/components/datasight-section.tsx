@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 
 // You'll need to add laptop images to your assets folder
@@ -9,8 +9,18 @@ import Laptop1 from "../../assets/photos/laptop.webp";
 import Laptop2 from "../../assets/photos/laptop.webp";
 import Laptop3 from "../../assets/photos/laptop.webp";
 
+import { ScrollReveal, SplitText, AnimatedCounter, MorphingShape } from "./ui/scroll-reveal";
+
 const DataSightShowcase = () => {
   const [currentSlide, setCurrentSlide] = useState(1); // Start with middle laptop
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-50%"]);
 
   const laptops = [
     {
@@ -58,47 +68,59 @@ const DataSightShowcase = () => {
   const visibleSlides = getVisibleSlides();
 
   return (
-    <section className="min-h-screen bg-black relative overflow-hidden py-20">
+    <section ref={sectionRef} className="min-h-screen bg-black relative overflow-hidden py-20">
+      {/* Animated Background Elements */}
+      <motion.div
+        className="absolute inset-0 opacity-20"
+        style={{ y: backgroundY }}
+      >
+        <MorphingShape
+          className="absolute top-20 left-10 opacity-30"
+          color="#92e8f1"
+          size={200}
+        />
+        <MorphingShape
+          className="absolute bottom-20 right-10 opacity-20"
+          color="#60a5fa"
+          size={150}
+        />
+      </motion.div>
+
       {/* Top border line */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-50" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 min-h-screen flex flex-col justify-center">
-        {/* Header Section */}
-        <motion.div
-          className="text-center mb-8"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
+        {/* Header Section with Parallax */}
+        <motion.div className="text-center mb-8" style={{ y: textY }}>
           {/* VANTIX subtitle */}
-          <div className="text-gray-400 text-lg tracking-[0.2em] mb-2 font-light">
-            VANTIX
-          </div>
+          <ScrollReveal delay={0.1} direction="down" distance={30}>
+            <div className="text-gray-400 text-lg tracking-[0.2em] mb-2 font-light">
+              VANTIX
+            </div>
+          </ScrollReveal>
 
-          {/* DATASIGHT main title */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide mb-2">
-            DATASIGHT
-          </h1>
+          {/* DATASIGHT main title with split text animation */}
+          <SplitText
+            text="DATASIGHT"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-wide mb-2"
+            delay={0.3}
+            staggerDelay={0.1}
+          />
 
           {/* Solution subtitle */}
-          <div className="text-gray-300 text-xl font-light">Solution</div>
+          <ScrollReveal delay={0.8} direction="up" distance={20}>
+            <div className="text-gray-300 text-xl font-light">Solution</div>
+          </ScrollReveal>
         </motion.div>
 
         {/* Realizarile noastre vorbesc */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
+        <ScrollReveal delay={0.2} direction="up" distance={40} className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-light text-white leading-tight">
             Realizarile noastre
             <br />
             vorbesc.
           </h2>
-        </motion.div>
+        </ScrollReveal>
 
         {/* Laptop Carousel */}
         <div className="flex-1 flex items-center justify-center mb-8">

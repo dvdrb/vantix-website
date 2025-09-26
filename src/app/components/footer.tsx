@@ -1,12 +1,20 @@
 "use client";
-import LiquidGlass from "liquid-glass-react";
+import EnhancedForm from "./ui/enhanced-form";
+import MobileForm from "./ui/mobile-form";
+import { useMobileDetection } from "../hooks/useMobileDetection";
 
 const Footer = () => {
+  const { isMobile } = useMobileDetection();
+
+  const handleFormSubmit = (data: Record<string, string>) => {
+    console.log("Form submitted:", data);
+    // Here you would typically send data to your API
+  };
   return (
-    <footer className="relative px-8 py-16">
+    <footer className="relative px-7 py-10">
       <div className="max-w-2xl mx-auto">
         {/* Liquid Glass Container (mirrors header style) */}
-        <div className="relative overflow-hidden rounded-[32px] p-10 shadow-xl">
+        <div className="relative overflow-hidden rounded-[32px] p-7 shadow-xl">
           {/* Decorative overlay */}
           <div className="pointer-events-none absolute inset-0" />
 
@@ -21,48 +29,12 @@ const Footer = () => {
                 VANTIX
               </div>
 
-              {/* Contact Form */}
-              <div className="space-y-4 mb-8">
-                <div
-                  className="border rounded-full px-6 py-4 shadow-lg"
-                  style={{
-                    background: "rgba(146, 232, 241, 0.06)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(14px) saturate(170%) brightness(96%)",
-                  }}
-                >
-                  <input
-                    type="text"
-                    placeholder="Numele Personal/ al Companiei"
-                    className="w-full bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none"
-                  />
-                </div>
-
-                <div
-                  className="border rounded-full px-6 py-4 shadow-lg"
-                  style={{
-                    background: "rgba(146, 232, 241, 0.06)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(14px) saturate(170%) brightness(96%)",
-                  }}
-                >
-                  <input
-                    type="email"
-                    placeholder="Email Personal/ al Companiei"
-                    className="w-full bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none"
-                  />
-                </div>
-
-                <button
-                  className="relative overflow-hidden border rounded-full px-8 py-3 font-medium text-gray-900 transition-all"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.85)",
-                    border: "1px solid rgba(255, 255, 255, 0.9)",
-                  }}
-                >
-                  Trimite mesaj
-                </button>
-              </div>
+              {/* Enhanced Contact Form */}
+              {isMobile ? (
+                <MobileForm onSubmit={handleFormSubmit} className="mb-8" />
+              ) : (
+                <EnhancedForm onSubmit={handleFormSubmit} className="mb-8" />
+              )}
             </div>
 
             {/* Contact Info inline (subtle internal glass) */}
@@ -79,12 +51,22 @@ const Footer = () => {
                   <h3 className="text-gray-300 text-sm mb-2">
                     Numar de Contact:
                   </h3>
-                  <p className="text-white text-lg">+40217821152</p>
+                  <a
+                    href="tel:+40745306164"
+                    className="text-white text-lg hover:text-cyan-400 transition-colors duration-200 cursor-pointer underline-offset-4 hover:underline"
+                  >
+                    +40745306164
+                  </a>
                 </div>
 
                 <div>
                   <h3 className="text-gray-300 text-sm mb-2">Email:</h3>
-                  <p className="text-white">asasfwqe@vantix.com</p>
+                  <a
+                    href="mailto:contact@vantix.ro"
+                    className="text-white hover:text-cyan-400 transition-colors duration-200 cursor-pointer underline-offset-4 hover:underline"
+                  >
+                    contact@vantix.ro
+                  </a>
                 </div>
 
                 <div>
@@ -155,7 +137,7 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="text-center mt-8">
+        <div className="text-center ">
           <p className="text-gray-400 text-sm">
             ©2025 Soft & Mark all rights reserved
           </p>
