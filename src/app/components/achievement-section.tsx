@@ -293,6 +293,7 @@ const AchievementsSection = () => {
                                   ? "object-cover object-top"
                                   : "object-cover "
                               }
+                              sizes="(max-width: 768px) 300px, 420px"
                             />
                           </div>
                         </div>

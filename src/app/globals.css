@@ -63,3 +63,9 @@ html {
     animation: none;
   }
 }
+
+/* Performance: avoid rendering offscreen content until needed */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 800px; /* fallback size to prevent layout shift */
+}

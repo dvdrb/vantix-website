@@ -286,6 +286,8 @@ const DataSightHero = () => {
                         }`}
                         src={Laptop}
                         alt="Software layout"
+                        priority
+                        sizes="(max-width: 768px) 90vw, 600px"
                       />
 
                       {/* Laptop Shadow */}

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AboutSection from "./components/about-section";
-import AchievementsSection from "./components/achievement-section";
-import DataSightShowcase from "./components/datasight-section";
+import dynamic from "next/dynamic";
+const AboutSection = dynamic(() => import("./components/about-section"), { ssr: false });
+const AchievementsSection = dynamic(() => import("./components/achievement-section"), { ssr: false });
+const DataSightShowcase = dynamic(() => import("./components/datasight-section"), { ssr: false });
 import DataSightHero from "./components/hero-section";
 import NavigationMenu from "./components/ui/navigation-menu";
 import ScrollProgress from "./components/ui/scroll-progress";
@@ -212,15 +213,15 @@ export default function Home() {
             <DataSightHero />
           </section>
 
-          <section data-scroll-id="about" id="about" aria-labelledby="about-title">
+          <section data-scroll-id="about" id="about" aria-labelledby="about-title" className="cv-auto">
             <AboutSection />
           </section>
 
-          <section data-scroll-id="achievements" id="achievements" aria-labelledby="achievements-title">
+          <section data-scroll-id="achievements" id="achievements" aria-labelledby="achievements-title" className="cv-auto">
             <AchievementsSection />
           </section>
 
-          <section data-scroll-id="solutions" id="solutions" aria-labelledby="solutions-title">
+          <section data-scroll-id="solutions" id="solutions" aria-labelledby="solutions-title" className="cv-auto">
             <DataSightShowcase />
           </section>
         </main>

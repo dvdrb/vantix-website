@@ -175,6 +175,7 @@ const AboutSection = () => {
                   alt="Adrian Hănțăscu - co-fondator vantix"
                   fill
                   className="object-cover rounded-3xl"
+                  sizes="(max-width: 768px) 90vw, 400px"
                 />
               </div>
             </motion.div>
@@ -200,6 +201,7 @@ const AboutSection = () => {
                   alt="Alexandru Hănțăscu - co-fondator vantix"
                   fill
                   className="object-cover rounded-3xl"
+                  sizes="(max-width: 768px) 90vw, 400px"
                 />
               </div>
             </motion.div>
