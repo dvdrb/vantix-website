@@ -218,6 +218,7 @@ const DataSightHero = () => {
                 <animated.div className="relative" style={ctaRightSpring}>
                   <a
                     href="#contact"
+                    className={`group relative overflow-hidden no-underline inline-flex items-center justify-center rounded-lg border-2 border-[#156786] text-white transition-all duration-400 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-400/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
                       isMobile ? "px-3 py-2.5 text-sm" : "px-6 py-3 text-base"
                     }`}
                     style={{
