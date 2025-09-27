@@ -190,8 +190,9 @@ const DataSightHero = () => {
                       transform: "scale(1.15)",
                     }}
                   />
-                  <button
-                    className={`border rounded-lg transition-all duration-300 shadow-lg shadow-cyan-500/10 hover:shadow-2xl hover:shadow-cyan-500/20 relative overflow-hidden ${
+                  <a
+                    href="#solutions"
+                    className={`inline-flex items-center justify-center text-center border rounded-lg transition-all duration-300 shadow-lg shadow-cyan-500/10 hover:shadow-2xl hover:shadow-cyan-500/20 relative overflow-hidden ${
                       isMobile ? "px-3 py-2.5 text-sm" : "px-10 py-3 text-base"
                     }`}
                     style={{
@@ -212,11 +213,11 @@ const DataSightHero = () => {
                           "linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%, rgba(146, 232, 241, 0.04) 100%)",
                       }}
                     />
-                  </button>
+                  </a>
                 </animated.div>
                 <animated.div className="relative" style={ctaRightSpring}>
-                  <button
-                    className={`group relative overflow-hidden inline-flex items-center justify-center rounded-lg border-2 border-[#156786] text-white transition-all duration-400 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-400/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                  <a
+                    href="#contact"
                       isMobile ? "px-3 py-2.5 text-sm" : "px-6 py-3 text-base"
                     }`}
                     style={{
@@ -235,10 +236,10 @@ const DataSightHero = () => {
                     {/* Moving shine */}
                     <span className="pointer-events-none absolute -inset-y-8 left-[-140%] w-2/3 rotate-12 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 transition-all duration-700 ease-out group-hover:translate-x-[240%] group-hover:opacity-100" />
                     {/* Border + text color transition */}
-                    <span className="relative z-10 font-medium tracking-wide transition-colors duration-300 group-hover:text-cyan-200">
+                    <span className="relative z-10 font-medium  tracking-wide transition-colors duration-300 group-hover:text-cyan-200">
                       Contacteaza-ne
                     </span>
-                  </button>
+                  </a>
                 </animated.div>
               </div>
 

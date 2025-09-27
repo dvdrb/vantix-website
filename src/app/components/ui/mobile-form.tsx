@@ -4,6 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useMobileDetection } from "../../hooks/useMobileDetection";
 
+const APPS_SCRIPT_URL =
+  process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
+  "https://script.google.com/macros/s/AKfycbwEO8DAoj6EPQZzysY75dsF-QJi4S04exZQbzeTVThJVGZ4mVPrvLD8sbv1bAjbcTZ7YQ/exec"; // TODO: set in env
+
 interface MobileFormField {
   name: string;
   placeholder: string;
@@ -23,9 +27,10 @@ const fields: MobileFormField[] = [
     type: "text",
     validation: (value) => {
       if (!value.trim()) return "Numele este obligatoriu";
-      if (value.trim().length < 2) return "Numele trebuie sa aiba cel putin 2 caractere";
+      if (value.trim().length < 2)
+        return "Numele trebuie sa aiba cel putin 2 caractere";
       return null;
-    }
+    },
   },
   {
     name: "email",
@@ -36,20 +41,20 @@ const fields: MobileFormField[] = [
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) return "Formatul emailului nu este valid";
       return null;
-    }
+    },
   },
   {
     name: "phone",
     placeholder: "Numărul de telefon (opțional)",
     type: "tel",
-    validation: () => null
+    validation: () => null,
   },
   {
     name: "message",
     placeholder: "Mesajul dvs. (opțional)",
     type: "textarea",
-    validation: () => null
-  }
+    validation: () => null,
+  },
 ];
 
 const MobileForm = ({ onSubmit, className = "" }: MobileFormProps) => {
@@ -59,18 +64,18 @@ const MobileForm = ({ onSubmit, className = "" }: MobileFormProps) => {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  const formRef = useRef<HTMLDivElement>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const validateField = (field: MobileFormField, value: string) => {
     return field.validation(value);
   };
 
   const handleInputChange = (fieldName: string, value: string) => {
-    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
 
     if (errors[fieldName]) {
-      setErrors(prev => ({ ...prev, [fieldName]: "" }));
+      setErrors((prev) => ({ ...prev, [fieldName]: "" }));
     }
   };
 
@@ -78,16 +83,17 @@ const MobileForm = ({ onSubmit, className = "" }: MobileFormProps) => {
     const value = formData[field.name] || "";
     const error = validateField(field, value);
     if (error) {
-      setErrors(prev => ({ ...prev, [field.name]: error }));
+      setErrors((prev) => ({ ...prev, [field.name]: error }));
     }
   };
 
-
   const handleSubmit = async () => {
-    const requiredFields = fields.filter(field => field.name === 'name' || field.name === 'email');
+    const requiredFields = fields.filter(
+      (field) => field.name === "name" || field.name === "email"
+    );
     const newErrors: Record<string, string> = {};
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       const value = formData[field.name] || "";
       const error = validateField(field, value);
       if (error) {
@@ -99,26 +105,63 @@ const MobileForm = ({ onSubmit, className = "" }: MobileFormProps) => {
 
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
+      setSubmitError(null);
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        onSubmit(formData);
+        const name = (formData["name"] || "").trim();
+        const email = (formData["email"] || "").trim();
+        const phone = (formData["phone"] || "").trim();
+        const message = (formData["message"] || "").trim();
+
+        const jsonPayload = {
+          name,
+          email,
+          phone,
+          message,
+          source: "mobile_form",
+        };
+
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(jsonPayload),
+        });
+
         setSubmitSuccess(true);
         setFormData({});
-        setTimeout(() => setSubmitSuccess(false), 3000);
-      } catch (error) {
-        console.error("Submit error:", error);
+        onSubmit?.(jsonPayload);
+      } catch (e) {
+        console.error("Form submit failed", e);
+        setSubmitError("A apărut o eroare la trimitere. Încercați din nou.");
       } finally {
         setIsSubmitting(false);
       }
     }
   };
 
+  const handleNativeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit();
+  };
 
   if (!isMobile) {
     // Return regular form for desktop
     return (
-      <div className={className}>
+      <form
+        ref={formRef}
+        onSubmit={handleNativeSubmit}
+        action={APPS_SCRIPT_URL}
+        method="POST"
+        className={className}
+      >
         <div className="space-y-4">
+          {submitError && (
+            <div className="rounded-lg px-3 py-2 text-red-300 bg-red-500/10 border border-red-400/20">
+              {submitError}
+            </div>
+          )}
           {fields.map((field) => (
             <MobileFormInput
               key={field.name}
@@ -136,24 +179,38 @@ const MobileForm = ({ onSubmit, className = "" }: MobileFormProps) => {
             />
           ))}
           <MobileSubmitButton
-            onClick={handleSubmit}
             isSubmitting={isSubmitting}
             isSuccess={submitSuccess}
             disabled={isSubmitting}
             isMobile={false}
           />
         </div>
-      </div>
+      </form>
     );
   }
 
   return (
-    <div className={`${className} ${orientation === 'portrait' ? 'px-2' : 'px-4'}`}>
+    <form
+      ref={formRef}
+      onSubmit={handleNativeSubmit}
+      action={APPS_SCRIPT_URL}
+      method="POST"
+      className={`${className} ${orientation === "portrait" ? "px-2" : "px-4"}`}
+    >
       {/* Success Message */}
       {submitSuccess && (
         <div className="mb-4 p-4 bg-green-500/20 border border-green-500/30 rounded-xl text-center">
-          <div className="text-green-400 font-medium">✓ Mesaj trimis cu succes!</div>
-          <div className="text-green-300 text-sm">Vă vom contacta în curând.</div>
+          <div className="text-green-400 font-medium">
+            ✓ Mesaj trimis cu succes!
+          </div>
+          <div className="text-green-300 text-sm">
+            Vă vom contacta în curând.
+          </div>
+        </div>
+      )}
+      {submitError && (
+        <div className="mb-4 p-3 bg-red-500/10 border border-red-400/20 rounded-xl text-center text-red-300">
+          {submitError}
         </div>
       )}
 
@@ -179,13 +236,12 @@ const MobileForm = ({ onSubmit, className = "" }: MobileFormProps) => {
 
       {/* Simple Submit Button */}
       <MobileSubmitButton
-        onClick={handleSubmit}
         isSubmitting={isSubmitting}
         isSuccess={submitSuccess}
         disabled={isSubmitting}
         isMobile={true}
       />
-    </div>
+    </form>
   );
 };
 
@@ -211,7 +267,7 @@ const MobileFormInput = ({
   onFocus,
   onBlur,
   isMobile,
-  autoFocus
+  autoFocus,
 }: MobileFormInputProps) => {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
@@ -223,7 +279,7 @@ const MobileFormInput = ({
 
   const inputClasses = `
     w-full bg-transparent text-white placeholder-gray-400 focus:outline-none
-    ${isMobile ? 'text-base py-4 px-4' : 'py-3 px-4'}
+    ${isMobile ? "text-base py-4 px-4" : "py-3 px-4"}
   `;
 
   return (
@@ -242,8 +298,7 @@ const MobileFormInput = ({
         }}
       >
         <div className="flex items-center">
-
-          {field.type === 'textarea' ? (
+          {field.type === "textarea" ? (
             <textarea
               ref={inputRef as React.RefObject<HTMLTextAreaElement>}
               name={field.name}
@@ -254,7 +309,7 @@ const MobileFormInput = ({
               onBlur={onBlur}
               className={`${inputClasses} resize-none`}
               rows={isMobile ? 4 : 3}
-              style={{ minHeight: isMobile ? '120px' : '80px' }}
+              style={{ minHeight: isMobile ? "120px" : "80px" }}
             />
           ) : (
             <input
@@ -267,7 +322,13 @@ const MobileFormInput = ({
               onFocus={onFocus}
               onBlur={onBlur}
               className={inputClasses}
-              inputMode={field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text'}
+              inputMode={
+                field.type === "email"
+                  ? "email"
+                  : field.type === "tel"
+                  ? "tel"
+                  : "text"
+              }
             />
           )}
         </div>
@@ -284,13 +345,11 @@ const MobileFormInput = ({
 };
 
 const MobileSubmitButton = ({
-  onClick,
   isSubmitting,
   isSuccess,
   disabled,
-  isMobile
+  isMobile,
 }: {
-  onClick: () => void;
   isSubmitting: boolean;
   isSuccess: boolean;
   disabled: boolean;
@@ -298,14 +357,14 @@ const MobileSubmitButton = ({
 }) => {
   return (
     <button
+      type="submit"
       className={`w-full rounded-xl font-medium transition-all duration-200 ${
-        isMobile ? 'py-4 px-6 text-base' : 'py-3 px-5'
+        isMobile ? "py-4 px-6 text-base" : "py-3 px-5"
       } ${
         isSuccess
           ? "bg-green-500 text-white"
           : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:opacity-90"
       } ${disabled ? "opacity-70" : ""}`}
-      onClick={onClick}
       disabled={disabled}
     >
       {isSubmitting ? (

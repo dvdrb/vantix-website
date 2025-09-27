@@ -22,9 +22,10 @@ const fields: FormField[] = [
     type: "text",
     validation: (value) => {
       if (!value.trim()) return "Numele este obligatoriu";
-      if (value.trim().length < 2) return "Numele trebuie sa aiba cel putin 2 caractere";
+      if (value.trim().length < 2)
+        return "Numele trebuie sa aiba cel putin 2 caractere";
       return null;
-    }
+    },
   },
   {
     name: "email",
@@ -35,9 +36,13 @@ const fields: FormField[] = [
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) return "Formatul emailului nu este valid";
       return null;
-    }
-  }
+    },
+  },
 ];
+
+const APPS_SCRIPT_URL =
+  process.env.NEXT_PUBLIC_APPS_SCRIPT_URL ||
+  "https://script.google.com/macros/s/AKfycbwEO8DAoj6EPQZzysY75dsF-QJi4S04exZQbzeTVThJVGZ4mVPrvLD8sbv1bAjbcTZ7YQ/exec"; // TODO: set in env
 
 const EnhancedForm = ({ onSubmit, className = "" }: EnhancedFormProps) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -45,17 +50,19 @@ const EnhancedForm = ({ onSubmit, className = "" }: EnhancedFormProps) => {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const validateField = (field: FormField, value: string) => {
     return field.validation(value);
   };
 
   const handleInputChange = (fieldName: string, value: string) => {
-    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
 
     // Clear error when user starts typing
     if (errors[fieldName]) {
-      setErrors(prev => ({ ...prev, [fieldName]: "" }));
+      setErrors((prev) => ({ ...prev, [fieldName]: "" }));
     }
   };
 
@@ -63,14 +70,14 @@ const EnhancedForm = ({ onSubmit, className = "" }: EnhancedFormProps) => {
     const value = formData[field.name] || "";
     const error = validateField(field, value);
     if (error) {
-      setErrors(prev => ({ ...prev, [field.name]: error }));
+      setErrors((prev) => ({ ...prev, [field.name]: error }));
     }
   };
 
   const handleSubmit = async () => {
     // Validate all fields
     const newErrors: Record<string, string> = {};
-    fields.forEach(field => {
+    fields.forEach((field) => {
       const value = formData[field.name] || "";
       const error = validateField(field, value);
       if (error) {
@@ -82,22 +89,82 @@ const EnhancedForm = ({ onSubmit, className = "" }: EnhancedFormProps) => {
 
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
+      setSubmitError(null);
+
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-        onSubmit(formData);
+        const formEl = formRef.current;
+        if (!formEl) return;
+
+        const name = (formData["name"] || "").trim();
+        const email = (formData["email"] || "").trim();
+        const message = ""; // Enhanced form has no message field
+
+        const jsonPayload = {
+          name,
+          email,
+          message,
+          source: "enhanced_form",
+        };
+
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(jsonPayload),
+        });
+
         setSubmitSuccess(true);
         setFormData({});
-        setTimeout(() => setSubmitSuccess(false), 3000);
-      } catch (error) {
-        console.error("Submit error:", error);
+        onSubmit?.({ name, email });
+      } catch (e) {
+        console.error("Form submit failed", e);
+        setSubmitError("A apărut o eroare la trimitere. Încercați din nou.");
       } finally {
         setIsSubmitting(false);
       }
     }
   };
 
+  const handleNativeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit();
+  };
+
   return (
-    <div className={`space-y-4 ${className}`}>
+    <form
+      ref={formRef}
+      onSubmit={handleNativeSubmit}
+      action={APPS_SCRIPT_URL}
+      method="POST"
+      className={`space-y-4 ${className}`}
+    >
+      <AnimatePresence>
+        {submitSuccess && (
+          <motion.div
+            className="rounded-xl px-4 py-3 text-emerald-300 bg-emerald-500/10 border border-emerald-400/20"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+          >
+            ✓ Mesaj trimis cu succes! Vă vom contacta în curând.
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {submitError && (
+          <motion.div
+            className="rounded-xl px-4 py-3 text-red-300 bg-red-500/10 border border-red-400/20"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+          >
+            {submitError}
+          </motion.div>
+        )}
+      </AnimatePresence>
       {fields.map((field, index) => (
         <FormInput
           key={field.name}
@@ -116,12 +183,11 @@ const EnhancedForm = ({ onSubmit, className = "" }: EnhancedFormProps) => {
       ))}
 
       <SubmitButton
-        onClick={handleSubmit}
         isSubmitting={isSubmitting}
         isSuccess={submitSuccess}
         disabled={isSubmitting}
       />
-    </div>
+    </form>
   );
 };
 
@@ -144,7 +210,7 @@ const FormInput = ({
   onChange,
   onFocus,
   onBlur,
-  delay
+  delay,
 }: FormInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -179,6 +245,7 @@ const FormInput = ({
         <input
           ref={inputRef}
           type={field.type}
+          name={field.name}
           placeholder={field.placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -214,7 +281,7 @@ const FormInput = ({
         animate={{
           boxShadow: isFocused
             ? "0 0 0 2px rgba(146, 232, 241, 0.2), 0 0 20px rgba(146, 232, 241, 0.1)"
-            : "0 0 0 0px transparent"
+            : "0 0 0 0px transparent",
         }}
         transition={{ duration: 0.2 }}
       />
@@ -223,15 +290,19 @@ const FormInput = ({
 };
 
 interface SubmitButtonProps {
-  onClick: () => void;
   isSubmitting: boolean;
   isSuccess: boolean;
   disabled: boolean;
 }
 
-const SubmitButton = ({ onClick, isSubmitting, isSuccess, disabled }: SubmitButtonProps) => {
+const SubmitButton = ({
+  isSubmitting,
+  isSuccess,
+  disabled,
+}: SubmitButtonProps) => {
   return (
     <motion.button
+      type="submit"
       className={`relative overflow-hidden border rounded-full px-8 py-3 font-medium transition-all w-full md:w-auto ${
         isSuccess
           ? "text-emerald-800 border-emerald-400/60"
@@ -240,14 +311,13 @@ const SubmitButton = ({ onClick, isSubmitting, isSuccess, disabled }: SubmitButt
       style={{
         background: isSuccess
           ? "rgba(167, 243, 208, 0.85)"
-          : "rgba(255, 255, 255, 0.85)"
+          : "rgba(255, 255, 255, 0.85)",
       }}
       whileHover={{ scale: disabled ? 1 : 1.05 }}
       whileTap={{ scale: disabled ? 1 : 0.98 }}
-      onClick={onClick}
       disabled={disabled}
       animate={{
-        opacity: disabled ? 0.7 : 1
+        opacity: disabled ? 0.7 : 1,
       }}
     >
       <AnimatePresence mode="wait">
@@ -271,7 +341,11 @@ const SubmitButton = ({ onClick, isSubmitting, isSuccess, disabled }: SubmitButt
             exit={{ opacity: 0, y: -10 }}
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span>Trimis cu succes!</span>
           </motion.div>
@@ -295,10 +369,10 @@ const SubmitButton = ({ onClick, isSubmitting, isSuccess, disabled }: SubmitButt
         transition={{
           duration: 1.5,
           repeat: isSubmitting ? Infinity : 0,
-          repeatType: "loop"
+          repeatType: "loop",
         }}
         style={{
-          clipPath: "polygon(0 0, 100% 0, 85% 100%, -15% 100%)"
+          clipPath: "polygon(0 0, 100% 0, 85% 100%, -15% 100%)",
         }}
       />
     </motion.button>

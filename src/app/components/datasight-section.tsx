@@ -1,22 +1,33 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import Image from "next/image";
 
 // You'll need to add laptop images to your assets folder
 import Laptop1 from "../../assets/photos/laptop.webp";
-import Laptop2 from "../../assets/photos/laptop.webp";
-import Laptop3 from "../../assets/photos/laptop.webp";
+import Software from "../../assets/photos/software-1.png";
+import Software2 from "../../assets/photos/software-2.png";
+import Camera from "../../assets/photos/camera.png";
 
-import { ScrollReveal, SplitText, AnimatedCounter, MorphingShape } from "./ui/scroll-reveal";
+import {
+  ScrollReveal,
+  SplitText,
+  AnimatedCounter,
+  MorphingShape,
+} from "./ui/scroll-reveal";
 
 const DataSightShowcase = () => {
   const [currentSlide, setCurrentSlide] = useState(1); // Start with middle laptop
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
 
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
@@ -25,21 +36,35 @@ const DataSightShowcase = () => {
   const laptops = [
     {
       id: 1,
-      title: "Realizarile noastre",
+      title: "Ce este Camera Vantix?",
       image: Laptop1,
       placeholder: "Analytics Dashboard",
+      description:
+        "Camera Vantix este o soluție inteligentă de monitorizare care folosește AI pentru a urmări productivitatea angajaților și eficiența proceselor. Prin analiza datelor în timp real, Camera Vantix oferă informații valoroase pentru luarea deciziilor și optimizarea fluxurilor de lucru.",
     },
     {
       id: 2,
-      title: "Realizarile noastre",
-      image: Laptop2,
+      title: "De ce să alegi Camera Vantix?",
+      image: Camera,
       placeholder: "Main DataSight Interface",
+      description:
+        "- Monitorizare inteligentă a angajaților și a productivității. </br> - Automatizare a proceselor de colectare de date și raportare.  </br> - Reducerea erorilor umane și creșterea eficienței operaționale.  </br> - Tehnologie AI avansată pentru analiza comportamentului și performanței.",
     },
     {
       id: 3,
-      title: "Realizarile noastre",
-      image: Laptop3,
+      title: "Impact și rezultate",
+      image: Software,
       placeholder: "Reports & Statistics",
+      description:
+        "- Creșterea productivității și eficienței. </br> - Trasabilitate completă și raportare rapidă. </br> - Fluxuri de lucru mai inteligente și predictibile.",
+    },
+    {
+      id: 4,
+      title: "Serviciile noastre",
+      image: Software2,
+      placeholder: "Reports & Statistics",
+      description:
+        "Oferim automatizări hardware și software, implementare și training, consultanță pentru optimizarea proceselor și integrare completă cu sisteme și API-uri existente.",
     },
   ];
 
@@ -68,7 +93,11 @@ const DataSightShowcase = () => {
   const visibleSlides = getVisibleSlides();
 
   return (
-    <section ref={sectionRef} className="min-h-screen bg-black relative overflow-hidden py-20">
+    <section
+      ref={sectionRef}
+      id="datasight"
+      className="min-h-screen bg-black relative overflow-hidden py-20"
+    >
       {/* Animated Background Elements */}
       <motion.div
         className="absolute inset-0 opacity-20"
@@ -114,7 +143,12 @@ const DataSightShowcase = () => {
         </motion.div>
 
         {/* Realizarile noastre vorbesc */}
-        <ScrollReveal delay={0.2} direction="up" distance={40} className="text-center mb-12">
+        <ScrollReveal
+          delay={0.2}
+          direction="up"
+          distance={40}
+          className="text-center mb-12"
+        >
           <h2 className="text-2xl md:text-3xl font-light text-white leading-tight">
             Realizarile noastre
             <br />
@@ -207,65 +241,13 @@ const DataSightShowcase = () => {
                         }
                       >
                         {/* Laptop Design */}
-                        <div className="relative">
-                          {/* Laptop Screen and Body */}
-                          <div className="relative w-80 h-52 bg-gradient-to-b from-gray-800 to-gray-900 rounded-t-2xl border border-gray-600 shadow-2xl">
-                            {/* Screen Bezel */}
-                            <div className="absolute inset-2 bg-black rounded-xl border border-gray-700 overflow-hidden">
-                              {/* Screen Content */}
-                              <div className="relative w-full h-full bg-gradient-to-br from-gray-900 via-blue-900/20 to-gray-800">
-                                {/* Replace with actual laptop screenshots when available */}
-                                {/* <Image
-                                  src={slide.image}
-                                  alt={`DataSight ${slide.title}`}
-                                  fill
-                                  className="object-cover"
-                                /> */}
-
-                                {/* Placeholder interface */}
-                                <div className="absolute inset-0 p-4">
-                                  {/* Top bar */}
-                                  <div className="flex items-center space-x-2 mb-4">
-                                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                    <div className="flex-1 bg-gray-700/50 h-6 rounded ml-4"></div>
-                                  </div>
-
-                                  {/* Interface content */}
-                                  <div className="grid grid-cols-2 gap-2 h-32">
-                                    <div className="bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded border border-cyan-500/30 p-2">
-                                      <div className="text-cyan-400 text-xs mb-1">
-                                        Analytics
-                                      </div>
-                                      <div className="w-full h-16 bg-gradient-to-r from-cyan-500/30 to-transparent rounded"></div>
-                                    </div>
-                                    <div className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded border border-blue-500/30 p-2">
-                                      <div className="text-blue-400 text-xs mb-1">
-                                        Data View
-                                      </div>
-                                      <div className="space-y-1">
-                                        <div className="w-full h-2 bg-blue-500/40 rounded"></div>
-                                        <div className="w-3/4 h-2 bg-blue-500/30 rounded"></div>
-                                        <div className="w-1/2 h-2 bg-blue-500/20 rounded"></div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Laptop Base */}
-                          <div className="relative w-80 h-6 bg-gradient-to-b from-gray-700 to-gray-800 rounded-b-xl border-x border-b border-gray-600">
-                            {/* Trackpad */}
-                            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-16 h-3 bg-gray-600 rounded border border-gray-500"></div>
-                          </div>
-
-                          {/* Shadow overlay for side laptops */}
-                          {!isCenter && (
-                            <div className="absolute inset-0 bg-black/50 rounded-2xl" />
-                          )}
+                        <div className="relative w-70 h-48">
+                          <Image
+                            src={slide.image}
+                            alt={`DataSight ${slide.title}`}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
                       </motion.div>
                     );
@@ -278,23 +260,23 @@ const DataSightShowcase = () => {
 
         {/* Slide Indicators */}
         <motion.div
-          className="flex justify-center space-x-8 mb-8"
+          className="flex justify-center space-x-5 mb-8"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          {laptops.map((_, index) => (
+          {laptops.map((slide, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`transition-all duration-300 text-sm ${
+              className={`transition-all duration-300 text-xs md:text-sm ${
                 index === currentSlide
                   ? "text-white font-medium"
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              Realizarile noastre
+              {slide.title}
             </button>
           ))}
         </motion.div>
@@ -327,12 +309,19 @@ const DataSightShowcase = () => {
             />
 
             <div className="relative z-10">
-              <p className="text-gray-300 text-lg leading-relaxed">
-                Multitask like a boss. Create documents and presentations and
-                collaborate across apps and video conferences — and do it all at
-                once. Microsoft 365, Slack, Zoom, Keynote, Omni Productivity
-                Suite, and more.
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  dangerouslySetInnerHTML={{
+                    __html: laptops[currentSlide].description,
+                  }}
+                  key={laptops[currentSlide].id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                  className="text-gray-300 text-sm text-center lg:text-lg leading-relaxed"
+                ></motion.p>
+              </AnimatePresence>
             </div>
           </div>
         </motion.div>

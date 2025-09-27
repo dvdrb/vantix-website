@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Contact Form (Google Apps Script)
+
+Both the Enhanced and Mobile contact forms post to a Google Apps Script Web App endpoint.
+
+- Configure your endpoint via environment variable before running/building:
+
+```
+export NEXT_PUBLIC_APPS_SCRIPT_URL="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
+```
+
+- Payload sent as JSON string with `Content-Type: text/plain` (simple request, no preflight):
+  - `name` (string)
+  - `email` (string)
+  - `phone` (string, optional – mobile form only)
+  - `message` (string, optional – mobile form only; desktop sends empty string)
+  - `source` (string: `enhanced_form` or `mobile_form`)
+
+Apps Script example handler expects `JSON.parse(e.postData.contents)` and returns JSON. We send with `mode: no-cors` to avoid CORS errors and keep the UI in place. If you add CORS headers in Apps Script (e.g., `Access-Control-Allow-Origin: *`), you can remove `no-cors` and read the response.

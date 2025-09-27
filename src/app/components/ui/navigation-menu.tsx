@@ -18,6 +18,7 @@ const navigationItems = [
 const NavigationMenu = ({ currentSection = "hero" }: NavigationMenuProps) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string>(currentSection);
 
   const mouseX = useSpring(0, { stiffness: 500, damping: 100 });
   const mouseY = useSpring(0, { stiffness: 500, damping: 100 });
@@ -35,7 +36,48 @@ const NavigationMenu = ({ currentSection = "hero" }: NavigationMenuProps) => {
   const handleNavClick = (sectionId: string) => {
     smoothScrollTo(sectionId, 100);
     setIsOpen(false);
+    // Notify page to update currentSection immediately
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('section:scrollto', { detail: { id: sectionId } } as any));
+    }
   };
+
+  // Local scroll spy: prefer viewport-center method to keep dots in sync even if parent prop doesn't update
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const targets = Array.from(document.querySelectorAll<HTMLElement>('section[data-scroll-id]'));
+    if (!targets.length) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const center = (window.innerHeight || document.documentElement.clientHeight) / 2;
+        let best = activeId;
+        let bestDist = Number.POSITIVE_INFINITY;
+        for (const el of targets) {
+          const rect = el.getBoundingClientRect();
+          const sectionCenter = rect.top + rect.height / 2;
+          const dist = Math.abs(sectionCenter - center);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = el.dataset.scrollId || el.id || best;
+          }
+        }
+        setActiveId(best);
+        ticking = false;
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    // Also sync when parent prop changes
+    setActiveId(currentSection);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [currentSection]);
 
   return (
     <>
@@ -56,7 +98,7 @@ const NavigationMenu = ({ currentSection = "hero" }: NavigationMenuProps) => {
             }}
           >
             {navigationItems.map((item, index) => {
-              const isActive = currentSection === item.id;
+              const isActive = activeId === item.id;
               return (
                 <NavigationItem
                   key={item.id}
