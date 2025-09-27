@@ -25,6 +25,12 @@ const AchievementsSection = () => {
   });
   const [paused, setPaused] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const animatingRef = useRef(false);
+  const currentRef = useRef(currentSlide);
+  const measured = !!(layout.containerW && layout.cardW);
+  useEffect(() => {
+    currentRef.current = currentSlide;
+  }, [currentSlide]);
 
   const achievements = [
     {
@@ -85,43 +91,63 @@ const AchievementsSection = () => {
     }
     const ctrls = animate(x, targetX, {
       type: "spring",
-      stiffness: 260,
-      damping: 30,
+      stiffness: 280,
+      damping: 36,
     });
     return ctrls?.finished ?? Promise.resolve();
   };
 
   const nextSlide = async () => {
-    const last = achievements.length - 1;
-    if (currentSlide === last) {
-      await animateToTrack(last + 2); // right clone
-      setCurrentSlide(0);
-      await animateToTrack(1, { immediate: true });
-    } else {
-      const ni = currentSlide + 1;
-      setCurrentSlide(ni);
-      await animateToTrack(toTrackIndex(ni));
+    if (animatingRef.current) return;
+    animatingRef.current = true;
+    try {
+      const last = achievements.length - 1;
+      const cs = currentRef.current;
+      if (cs === last) {
+        await animateToTrack(last + 2); // right clone
+        setCurrentSlide(0);
+        await animateToTrack(1, { immediate: true });
+      } else {
+        const ni = cs + 1;
+        setCurrentSlide(ni);
+        await animateToTrack(toTrackIndex(ni));
+      }
+    } finally {
+      animatingRef.current = false;
     }
   };
 
   const prevSlide = async () => {
-    const last = achievements.length - 1;
-    if (currentSlide === 0) {
-      await animateToTrack(0); // left clone
-      setCurrentSlide(last);
-      await animateToTrack(last + 1, { immediate: true });
-    } else {
-      const pi = currentSlide - 1;
-      setCurrentSlide(pi);
-      await animateToTrack(toTrackIndex(pi));
+    if (animatingRef.current) return;
+    animatingRef.current = true;
+    try {
+      const last = achievements.length - 1;
+      const cs = currentRef.current;
+      if (cs === 0) {
+        await animateToTrack(0); // left clone
+        setCurrentSlide(last);
+        await animateToTrack(last + 1, { immediate: true });
+      } else {
+        const pi = cs - 1;
+        setCurrentSlide(pi);
+        await animateToTrack(toTrackIndex(pi));
+      }
+    } finally {
+      animatingRef.current = false;
     }
   };
 
   const goToSlide = async (index: number) => {
     const target = clampIndex(index);
-    if (target === currentSlide) return;
-    setCurrentSlide(target);
-    await animateToTrack(toTrackIndex(target));
+    if (target === currentRef.current) return;
+    if (animatingRef.current) return;
+    animatingRef.current = true;
+    try {
+      setCurrentSlide(target);
+      await animateToTrack(toTrackIndex(target));
+    } finally {
+      animatingRef.current = false;
+    }
   };
 
   // Measure layout and keep in sync with resize
@@ -190,20 +216,22 @@ const AchievementsSection = () => {
               ref={trackRef}
               className="flex items-stretch gap-6 select-none cursor-grab active:cursor-grabbing"
               style={{ x }}
-              drag="x"
-              dragElastic={0.08}
+              drag={measured ? "x" : false}
+              dragMomentum={false}
+              dragElastic={0.03}
               onDragStart={() => setDragging(true)}
               onDragEnd={(_, info) => {
+                if (animatingRef.current) { setDragging(false); return; }
                 setDragging(false);
-                const threshold = (layout.cardW + layout.gap) * 0.2;
-                let next = currentSlide;
-                if (info.offset.x < -threshold || info.velocity.x < -500)
-                  next = currentSlide + 1;
-                if (info.offset.x > threshold || info.velocity.x > 500)
-                  next = currentSlide - 1;
-                next = clampIndex(next);
-                if (next > currentSlide) void nextSlide();
-                else if (next < currentSlide) void prevSlide();
+                const pixelThreshold = Math.max(40, (layout.cardW + layout.gap) * 0.15);
+                const delta = info.offset.x;
+                if (delta < -pixelThreshold) {
+                  void nextSlide();
+                } else if (delta > pixelThreshold) {
+                  void prevSlide();
+                } else {
+                  void animateToTrack(toTrackIndex(currentRef.current));
+                }
               }}
             >
               {[
@@ -282,7 +310,7 @@ const AchievementsSection = () => {
                         </div>
 
                         {/* Image Container */}
-                        <div className="relative w-full h-64 mb-6 px-6">
+                        <div className="relative w-full h-48 md:h-64 lg:h-72 mb-5 px-4 md:px-6">
                           <div className="relative w-full h-full bg-gradient-to-br from-slate-700/20 to-slate-800/30 rounded-2xl overflow-hidden">
                             <Image
                               src={achievement.image}
@@ -359,43 +387,7 @@ const AchievementsSection = () => {
               })}
             </motion.div>
 
-            {/* Prev/Next controls */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 sm:px-4">
-              <button
-                aria-label="Previous"
-                onClick={prevSlide}
-                className="pointer-events-auto w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white grid place-items-center backdrop-blur border border-white/15"
-              >
-                {/* Left chevron */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="w-4 h-4"
-                >
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-              <button
-                aria-label="Next"
-                onClick={nextSlide}
-                className="pointer-events-auto w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white grid place-items-center backdrop-blur border border-white/15"
-              >
-                {/* Right chevron */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="w-4 h-4"
-                >
-                  <path d="M9 6l6 6-6 6" />
-                </svg>
-              </button>
-            </div>
+            {/* Prev/Next controls removed by request */}
           </div>
         </div>
 
