@@ -252,6 +252,28 @@ const AchievementsSection = () => {
                             : "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
                         }}
                       >
+                        {/* Active shimmer highlight */}
+                        <motion.div
+                          className="pointer-events-none absolute inset-0 rounded-[32px]"
+                          initial={false}
+                          animate={{
+                            opacity: isActive ? 1 : 0,
+                          }}
+                          transition={{ duration: 0.35 }}
+                        >
+                          <motion.div
+                            className="absolute -inset-y-10 -left-1/2 w-2/3 rotate-[20deg]"
+                            style={{
+                              background:
+                                "linear-gradient(110deg, transparent, rgba(255,255,255,0.08), transparent)",
+                            }}
+                            initial={false}
+                            animate={{
+                              x: isActive ? ["-50%", "170%"] : "-50%",
+                            }}
+                            transition={{ duration: 1.6, repeat: isActive ? Infinity : 0, repeatType: "loop" }}
+                          />
+                        </motion.div>
                         {/* Card Header */}
                         <div className="p-6 ">
                           <h3 className="text-white text-base lg:text-xl font-medium text-center">

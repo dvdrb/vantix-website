@@ -7,9 +7,9 @@ import DataSightShowcase from "./components/datasight-section";
 import DataSightHero from "./components/hero-section";
 import NavigationMenu from "./components/ui/navigation-menu";
 import ScrollProgress from "./components/ui/scroll-progress";
-import BackToTop from "./components/ui/back-to-top";
 import PageLoader from "./components/ui/page-loader";
 import { MobilePullToRefresh } from "./components/ui/mobile-interactions";
+import MobileCtaBar from "./components/ui/mobile-cta-bar";
 
 export default function Home() {
   const [currentSection, setCurrentSection] = useState("hero");
@@ -205,7 +205,7 @@ export default function Home() {
       <MobilePullToRefresh onRefresh={handleRefresh}>
         <ScrollProgress />
         <NavigationMenu currentSection={currentSection} />
-        <BackToTop />
+        <MobileCtaBar />
 
         <main role="main">
           <section data-scroll-id="hero" id="hero" aria-labelledby="hero-title">

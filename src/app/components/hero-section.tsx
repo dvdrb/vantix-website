@@ -11,6 +11,7 @@ import Decor5 from "../../assets/photos/decor-5.webp";
 import Decor6 from "../../assets/photos/decor-6.webp";
 
 import { useSpring, useSprings, animated } from "@react-spring/web";
+import { motion, useScroll, useTransform } from "framer-motion";
 import ParticleSystem from "./ui/particle-system";
 import { useMobileDetection } from "../hooks/useMobileDetection";
 
@@ -95,6 +96,9 @@ const DataSightHero = () => {
     return () => observer.disconnect();
   }, [leftApi, rightApi, leftImages.length]);
 
+  const { scrollYProgress } = useScroll();
+  const cardParallaxY = useTransform(scrollYProgress, [0, 1], [0, -30]);
+
   const heroContent = (
     <div
       ref={sectionRef}
@@ -127,165 +131,171 @@ const DataSightHero = () => {
       <div className="relative z-10  flex items-center justify-center px-8 border-b border-white">
         <div className="max-w-4xl mx-auto ">
           {/* Main Glass Container (match header, slightly darker) */}
-          <animated.div style={cardSpring}>
-            <div
-              className={`relative overflow-hidden mb-5 rounded-3xl shadow-2xl shadow-cyan-500/20 border ${
-                isMobile ? "px-6 pt-6" : "px-32 pt-9"
-              }`}
-              style={{
-                background: "rgba(146, 232, 241, 0.08)",
-                border: "1px solid rgba(196, 213, 215, 0.18)",
-                backdropFilter: "blur(20px) saturate(180%) brightness(108%)",
-              }}
-            >
-              {/* Glass sheen overlay */}
+          <motion.div style={{ y: isMobile ? 0 : cardParallaxY }}>
+            <animated.div style={cardSpring}>
               <div
-                className="absolute inset-0 pointer-events-none rounded-3xl"
+                className={`relative overflow-hidden mb-5 rounded-3xl shadow-2xl shadow-cyan-500/20 border ${
+                  isMobile ? "px-6 pt-6" : "px-32 pt-9"
+                }`}
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, transparent 50%, rgba(146, 232, 241, 0.04) 100%)",
+                  background: "rgba(146, 232, 241, 0.08)",
+                  border: "1px solid rgba(196, 213, 215, 0.18)",
+                  backdropFilter: "blur(20px) saturate(180%) brightness(108%)",
                 }}
-              />
-              {/* External glow behind card */}
-              <div
-                className="absolute inset-0 -z-10 opacity-30"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, rgba(146, 232, 241, 0.2) 0%, transparent 70%)",
-                  filter: "blur(18px)",
-                  transform: "scale(1.05)",
-                }}
-              />
-              {/* Header */}
-              <header className="text-center mt-6 mb-8 relative z-10">
-                <h1
-                  id="hero-title"
-                  className={`text-white leading-normal font-medium tracking-wide ${
-                    isMobile ? "text-3xl" : "text-4xl"
-                  }`}
-                >
-                  DATASIGHT
-                </h1>
-                <p
-                  className={`text-gray-300 font-medium leading-normal text-white ${
-                    isMobile ? "text-lg" : "text-xl"
-                  }`}
-                  role="doc-subtitle"
-                >
-                  Solution
-                </p>
-              </header>
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-center gap-4 mb-8 relative z-10">
-                <animated.div className="relative" style={ctaLeftSpring}>
-                  {/* External glow behind button (match header glow) */}
-                  <div
-                    className="absolute inset-0 -z-10 opacity-30 pointer-events-none"
-                    style={{
-                      borderRadius: "9999px",
-                      background:
-                        "radial-gradient(ellipse at center, rgba(146, 232, 241, 0.25) 0%, transparent 70%)",
-                      filter: "blur(12px)",
-                      transform: "scale(1.15)",
-                    }}
-                  />
-                  <a
-                    href="#solutions"
-                    className={`inline-flex items-center justify-center text-center border rounded-lg transition-all duration-300 shadow-lg shadow-cyan-500/10 hover:shadow-2xl hover:shadow-cyan-500/20 relative overflow-hidden ${
-                      isMobile ? "px-3 py-2.5 text-sm" : "px-10 py-3 text-base"
+              >
+                {/* Glass sheen overlay */}
+                <div
+                  className="absolute inset-0 pointer-events-none rounded-3xl"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, transparent 50%, rgba(146, 232, 241, 0.04) 100%)",
+                  }}
+                />
+                {/* External glow behind card */}
+                <div
+                  className="absolute inset-0 -z-10 opacity-30"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at center, rgba(146, 232, 241, 0.2) 0%, transparent 70%)",
+                    filter: "blur(18px)",
+                    transform: "scale(1.05)",
+                  }}
+                />
+                {/* Header */}
+                <header className="text-center mt-6 mb-8 relative z-10">
+                  <h1
+                    id="hero-title"
+                    className={`text-white leading-normal font-medium tracking-wide ${
+                      isMobile ? "text-3xl" : "text-4xl"
                     }`}
-                    style={{
-                      background: "rgba(146, 232, 241, 0.08)",
-                      border: "1px solid rgba(146, 232, 241, 0.18)",
-                      backdropFilter:
-                        "blur(15px) saturate(150%) brightness(103%)",
-                    }}
                   >
-                    <span className="relative font-medium leading-normal z-10 text-gray-100">
-                      Mai multe
-                    </span>
-                    {/* Button gradient overlay (same as header) */}
-                    <div
-                      className="absolute inset-0 rounded-lg pointer-events-none"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%, rgba(146, 232, 241, 0.04) 100%)",
-                      }}
-                    />
-                  </a>
-                </animated.div>
-                <animated.div className="relative" style={ctaRightSpring}>
-                  <a
-                    href="#contact"
-                    className={`group relative overflow-hidden no-underline inline-flex items-center justify-center rounded-lg border-2 border-[#156786] text-white transition-all duration-400 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-400/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
-                      isMobile ? "px-3 py-2.5 text-sm" : "px-6 py-3 text-base"
+                    DATASIGHT
+                  </h1>
+                  <p
+                    className={`text-gray-300 font-medium leading-normal text-white ${
+                      isMobile ? "text-lg" : "text-xl"
                     }`}
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 1) 100%)",
-                    }}
+                    role="doc-subtitle"
                   >
-                    {/* Static subtle inner glow */}
+                    Solution
+                  </p>
+                </header>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-center gap-4 mb-8 relative z-10">
+                  <animated.div className="relative" style={ctaLeftSpring}>
+                    {/* External glow behind button (match header glow) */}
                     <div
-                      className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      className="absolute inset-0 -z-10 opacity-30 pointer-events-none"
                       style={{
+                        borderRadius: "9999px",
                         background:
-                          "radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 60%)",
+                          "radial-gradient(ellipse at center, rgba(146, 232, 241, 0.25) 0%, transparent 70%)",
+                        filter: "blur(12px)",
+                        transform: "scale(1.15)",
                       }}
                     />
-                    {/* Moving shine */}
-                    <span className="pointer-events-none absolute -inset-y-8 left-[-140%] w-2/3 rotate-12 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 transition-all duration-700 ease-out group-hover:translate-x-[240%] group-hover:opacity-100" />
-                    {/* Border + text color transition */}
-                    <span className="relative z-10 font-medium  tracking-wide transition-colors duration-300 group-hover:text-cyan-200">
-                      Contacteaza-ne
-                    </span>
-                  </a>
-                </animated.div>
-              </div>
-
-              {/* Divider Line */}
-              <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-500/30 to-transparent mb-8 relative z-10"></div>
-
-              {/* Highlights Section */}
-              <div className="text-center relative z-10">
-                <h2
-                  className={`text-white leading-normal font-medium ${
-                    isMobile ? "text-2xl" : "text-3xl"
-                  }`}
-                >
-                  Get the highlights.
-                </h2>
-
-                {/* Laptop Display Container */}
-                <div className="relative my-6">
-                  <div className="relative mx-auto max-w-xl ">
-                    {/* Glow behind laptop */}
-                    <div
-                      className="pointer-events-none absolute -inset-14 -z-10 opacity-60"
-                      style={{
-                        background:
-                          "radial-gradient(ellipse at center, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.18) 30%, transparent 70%)",
-                        filter: "blur(28px)",
-                        transform: "scale(1.05)",
-                      }}
-                    />
-
-                    <Image
-                      className={`object-contain ${
-                        isMobile ? "h-[200px]" : "h-[300px]"
+                    <a
+                      href="#solutions"
+                      className={`inline-flex items-center justify-center text-center border rounded-lg transition-all duration-300 shadow-lg shadow-cyan-500/10 hover:shadow-2xl hover:shadow-cyan-500/20 relative overflow-hidden ${
+                        isMobile
+                          ? "w-full px-3 py-2.5 text-sm"
+                          : "px-10 py-3 text-base"
                       }`}
-                      src={Laptop}
-                      alt="Software layout"
-                    />
+                      style={{
+                        background: "rgba(146, 232, 241, 0.08)",
+                        border: "1px solid rgba(146, 232, 241, 0.18)",
+                        backdropFilter:
+                          "blur(15px) saturate(150%) brightness(103%)",
+                      }}
+                    >
+                      <span className="relative font-medium leading-normal z-10 text-gray-100">
+                        Mai multe
+                      </span>
+                      {/* Button gradient overlay (same as header) */}
+                      <div
+                        className="absolute inset-0 rounded-lg pointer-events-none"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%, rgba(146, 232, 241, 0.04) 100%)",
+                        }}
+                      />
+                    </a>
+                  </animated.div>
+                  <animated.div className="relative" style={ctaRightSpring}>
+                    <a
+                      href="#contact"
+                      className={`group relative overflow-hidden no-underline inline-flex items-center justify-center rounded-lg border-2 border-[#156786] text-white transition-all duration-400 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-400/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 ${
+                        isMobile
+                          ? "w-full px-3 py-2.5 text-sm"
+                          : "px-6 py-3 text-base"
+                      }`}
+                      style={{
+                        background:
+                          "linear-gradient(135deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 1) 100%)",
+                      }}
+                    >
+                      {/* Static subtle inner glow */}
+                      <div
+                        className="pointer-events-none absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background:
+                            "radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 60%)",
+                        }}
+                      />
+                      {/* Moving shine */}
+                      <span className="pointer-events-none absolute -inset-y-8 left-[-140%] w-2/3 rotate-12 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 transition-all duration-700 ease-out group-hover:translate-x-[240%] group-hover:opacity-100" />
+                      {/* Border + text color transition */}
+                      <span className="relative z-10 font-medium  tracking-wide transition-colors duration-300 group-hover:text-cyan-200">
+                        Contacteaza-ne
+                      </span>
+                    </a>
+                  </animated.div>
+                </div>
 
-                    {/* Laptop Shadow */}
-                    <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-3/4 h-8 bg-black/25 rounded-full blur-xl"></div>
+                {/* Divider Line */}
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-500/30 to-transparent mb-8 relative z-10"></div>
+
+                {/* Highlights Section */}
+                <div className="text-center relative z-10">
+                  <h2
+                    className={`text-white leading-normal font-medium ${
+                      isMobile ? "text-2xl" : "text-3xl"
+                    }`}
+                  >
+                    Get the highlights.
+                  </h2>
+
+                  {/* Laptop Display Container */}
+                  <div className="relative my-6">
+                    <div className="relative mx-auto max-w-xl ">
+                      {/* Glow behind laptop */}
+                      <div
+                        className="pointer-events-none absolute -inset-14 -z-10 opacity-60"
+                        style={{
+                          background:
+                            "radial-gradient(ellipse at center, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.18) 30%, transparent 70%)",
+                          filter: "blur(28px)",
+                          transform: "scale(1.05)",
+                        }}
+                      />
+
+                      <Image
+                        className={`object-contain ${
+                          isMobile ? "h-[200px]" : "h-[300px]"
+                        }`}
+                        src={Laptop}
+                        alt="Software layout"
+                      />
+
+                      {/* Laptop Shadow */}
+                      <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-3/4 h-8 bg-black/25 rounded-full blur-xl"></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </animated.div>
+            </animated.div>
+          </motion.div>
         </div>
       </div>
 

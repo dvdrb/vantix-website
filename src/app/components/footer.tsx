@@ -3,6 +3,8 @@ import EnhancedForm from "./ui/enhanced-form";
 import MobileForm from "./ui/mobile-form";
 import { useMobileDetection } from "../hooks/useMobileDetection";
 
+import { motion } from "framer-motion";
+
 const Footer = () => {
   const { isMobile } = useMobileDetection();
 
@@ -14,7 +16,13 @@ const Footer = () => {
     <footer className="relative px-7 py-10">
       <div className="max-w-2xl mx-auto">
         {/* Liquid Glass Container (mirrors header style) */}
-        <div className="relative overflow-hidden rounded-[32px] p-7 shadow-xl">
+        <motion.div
+          className="relative overflow-hidden rounded-[32px] p-7 shadow-xl"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-20% 0px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           {/* Decorative overlay */}
           <div className="pointer-events-none absolute inset-0" />
 
@@ -83,7 +91,7 @@ const Footer = () => {
               transform: "scale(1.06)",
             }}
           />
-        </div>
+        </motion.div>
 
         {/* Copyright */}
         <div className="text-center ">

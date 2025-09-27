@@ -42,6 +42,16 @@ const NavigationMenu = ({ currentSection = "hero" }: NavigationMenuProps) => {
     }
   };
 
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = isOpen ? 'hidden' : original || '';
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [isOpen]);
+
   // Local scroll spy: prefer viewport-center method to keep dots in sync even if parent prop doesn't update
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -81,6 +91,7 @@ const NavigationMenu = ({ currentSection = "hero" }: NavigationMenuProps) => {
 
   return (
     <>
+      {/* Mobile Toggle Button removed per request */}
       {/* Desktop Navigation */}
       <div className="hidden md:block fixed top-1/2 right-8 -translate-y-1/2 z-50">
         <motion.nav
@@ -125,8 +136,11 @@ const NavigationMenu = ({ currentSection = "hero" }: NavigationMenuProps) => {
         animate={{ opacity: isOpen ? 1 : 0 }}
         style={{ pointerEvents: isOpen ? "auto" : "none" }}
       >
-        <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="absolute inset-0 bg-black/80 backdrop-blur-md"
+          onClick={() => setIsOpen(false)}
+        />
+        <div className="absolute inset-0 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
           <div className="text-center space-y-8">
             {navigationItems.map((item, index) => (
               <motion.button

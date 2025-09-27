@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   motion,
   AnimatePresence,
@@ -23,7 +23,10 @@ import {
 } from "./ui/scroll-reveal";
 
 const DataSightShowcase = () => {
-  const [currentSlide, setCurrentSlide] = useState(1); // Start with middle laptop
+  const [currentSlide, setCurrentSlide] = useState(0); // Start with first slide: "Ce este Camera Vantix?"
+  const [isHovering, setIsHovering] = useState(false);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const autoplayRef = useRef<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -92,11 +95,47 @@ const DataSightShowcase = () => {
 
   const visibleSlides = getVisibleSlides();
 
+  // Tunables
+  const AUTOPLAY_MS = 5200; // adjust to speed up/slow down auto-advance
+  const DRAG_THRESHOLD = 45; // px required to change slide on drag
+
+  // Autoplay with pause on hover or dragging
+  useEffect(() => {
+    if (isHovering) return;
+    if (dragStartX !== null) return;
+    if (autoplayRef.current) window.clearInterval(autoplayRef.current);
+    autoplayRef.current = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % laptops.length);
+    }, AUTOPLAY_MS);
+    return () => {
+      if (autoplayRef.current) window.clearInterval(autoplayRef.current);
+    };
+  }, [isHovering, dragStartX, laptops.length]);
+
+  // Keyboard navigation when section in view
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+      if (!inView) return;
+      if (e.key === "ArrowRight")
+        setCurrentSlide((p) => (p + 1) % laptops.length);
+      if (e.key === "ArrowLeft")
+        setCurrentSlide((p) => (p - 1 + laptops.length) % laptops.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [laptops.length]);
+
   return (
     <section
       ref={sectionRef}
       id="datasight"
       className="min-h-screen bg-black relative overflow-hidden py-20"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       {/* Animated Background Elements */}
       <motion.div
@@ -120,7 +159,7 @@ const DataSightShowcase = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 min-h-screen flex flex-col justify-center">
         {/* Header Section with Parallax */}
-        <motion.div className="text-center mb-8" style={{ y: textY }}>
+        <motion.div className="text-center mb-4 lg:mb-8" style={{ y: textY }}>
           {/* VANTIX subtitle */}
           <ScrollReveal delay={0.1} direction="down" distance={30}>
             <div className="text-gray-400 text-lg tracking-[0.2em] mb-2 font-light">
@@ -147,7 +186,7 @@ const DataSightShowcase = () => {
           delay={0.2}
           direction="up"
           distance={40}
-          className="text-center mb-12"
+          className="text-center  lg:mb-12"
         >
           <h2 className="text-2xl md:text-3xl font-light text-white leading-tight">
             Realizarile noastre
@@ -199,8 +238,19 @@ const DataSightShowcase = () => {
             </button>
 
             {/* Laptops Container */}
-            <div className="flex justify-center items-center px-16">
-              <div className="relative flex justify-center items-center space-x-8 w-full max-w-5xl">
+            <div className="flex justify-center items-center px-6 md:px-16">
+              <motion.div
+                className="relative flex justify-center items-center space-x-6 md:space-x-8 w-full max-w-5xl cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                onDragStart={(_, info) => setDragStartX(info.point.x)}
+                onDragEnd={(_, info) => {
+                  const delta = info.point.x - (dragStartX ?? info.point.x);
+                  setDragStartX(null);
+                  if (delta > DRAG_THRESHOLD) prevSlide();
+                  else if (delta < -DRAG_THRESHOLD) nextSlide();
+                }}
+              >
                 <AnimatePresence mode="wait">
                   {visibleSlides.map((slide, index) => {
                     const isCenter = index === 1;
@@ -237,11 +287,23 @@ const DataSightShowcase = () => {
                           ease: [0.4, 0, 0.2, 1],
                         }}
                         whileHover={
-                          !isCenter ? { scale: 0.75, opacity: 0.5 } : {}
+                          !isCenter
+                            ? { scale: 0.75, opacity: 0.5 }
+                            : { rotateX: -6, rotateY: 6 }
                         }
                       >
+                        {/* Soft glow behind active (center) slide */}
+                        {isCenter && (
+                          <div
+                            className="absolute -inset-8 -z-10 rounded-full opacity-40 blur-2xl"
+                            style={{
+                              background:
+                                "radial-gradient(ellipse at center, rgba(146, 232, 241, 0.35) 0%, transparent 70%)",
+                            }}
+                          />
+                        )}
                         {/* Laptop Design */}
-                        <div className="relative w-70 h-48">
+                        <div className="relative w-64 h-40 md:w-70 md:h-48">
                           <Image
                             src={slide.image}
                             alt={`DataSight ${slide.title}`}
@@ -253,14 +315,14 @@ const DataSightShowcase = () => {
                     );
                   })}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
 
-        {/* Slide Indicators */}
+        {/* Slide Indicators (text on desktop) */}
         <motion.div
-          className="flex justify-center space-x-5 mb-8"
+          className="hidden md:flex justify-center space-x-5 mb-8"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -280,6 +342,33 @@ const DataSightShowcase = () => {
             </button>
           ))}
         </motion.div>
+
+        {/* Mobile dots + autoplay progress */}
+        <div className="md:hidden flex flex-col items-center mb-8">
+          <div className="flex space-x-2 mb-2">
+            {laptops.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  index === currentSlide
+                    ? "bg-cyan-400 scale-110"
+                    : "bg-gray-600"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+          <div className="h-0.5 w-40 bg-white/10 overflow-hidden rounded">
+            <motion.div
+              key={currentSlide}
+              className="h-full bg-gradient-to-r from-cyan-400 to-blue-500"
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
+            />
+          </div>
+        </div>
 
         {/* Description Card */}
         <motion.div
@@ -310,17 +399,23 @@ const DataSightShowcase = () => {
 
             <div className="relative z-10">
               <AnimatePresence mode="wait">
-                <motion.p
-                  dangerouslySetInnerHTML={{
-                    __html: laptops[currentSlide].description,
-                  }}
+                <motion.div
                   key={laptops[currentSlide].id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                  className="text-gray-300 text-sm text-center lg:text-lg leading-relaxed"
-                ></motion.p>
+                >
+                  <h3 className="text-white text-lg md:text-2xl font-medium text-center mb-3">
+                    {laptops[currentSlide].title}
+                  </h3>
+                  <p
+                    className="text-gray-300 text-sm text-center lg:text-lg leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html: laptops[currentSlide].description,
+                    }}
+                  />
+                </motion.div>
               </AnimatePresence>
             </div>
           </div>
