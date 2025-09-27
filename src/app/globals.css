@@ -30,6 +30,11 @@ body {
   font-family: "Inter", serif;
 }
 
+/* Global smooth scrolling for anchor navigation */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Pop-in animation for hero decorative shapes */
 @keyframes pop-from-bottom {
   0% {

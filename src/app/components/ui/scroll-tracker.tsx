@@ -7,12 +7,14 @@ type Props = {
   sections?: string[];
   leftOffset?: string | number;
   segmentHeight?: number;
+  onSectionChange?: (section: string) => void;
 };
 
 export const ScrollTrackerGlass: React.FC<Props> = ({
   sections: sectionsProp,
   leftOffset = "6",
   segmentHeight = 36,
+  onSectionChange,
 }) => {
   const [sections, setSections] = useState<string[]>([]);
   const ratiosRef = useRef<Record<string, number>>({});
@@ -53,6 +55,7 @@ export const ScrollTrackerGlass: React.FC<Props> = ({
           }
         }
         setActive(bestId);
+        onSectionChange?.(bestId);
       },
       {
         root: null,

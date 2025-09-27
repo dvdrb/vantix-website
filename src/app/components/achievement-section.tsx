@@ -6,10 +6,10 @@ import Image from "next/image";
 
 // You'll need to add these images to your assets folder
 
-import Achievement1 from "../../assets/photos/achievement-1.webp";
-import Achievement2 from "../../assets/photos/achievement-1.webp";
-import Achievement3 from "../../assets/photos/achievement-1.webp";
-import Achievement4 from "../../assets/photos/achievement-1.webp";
+import Achievement1 from "../../assets/photos/achievement-1.jpg";
+import Achievement2 from "../../assets/photos/achievement-2.jpg";
+import Achievement3 from "../../assets/photos/achievement-3.jpg";
+import Achievement4 from "../../assets/photos/achievement-4.jpg";
 
 const AchievementsSection = () => {
   const [currentSlide, setCurrentSlide] = useState(1); // Center card active
@@ -31,7 +31,7 @@ const AchievementsSection = () => {
       id: 1,
       title: "Realizarile noastre vorbesc.",
       description:
-        "Multitask like a boss. Create documents and presentations and collaborate across apps and video conferences — and do it all at once. Microsoft 365, Slack, Zoom, Keynote, Omni Productivity Suite, and more.",
+        "Alex a lucrat timp de 4 ani la proiectul Project Ecrida, unde a lansat o imprimantă 3D în spațiu, în parteneriat cu Agenția Spațială Europeană.",
       image: Achievement1,
       placeholder: "Achievement 1",
     },
@@ -39,7 +39,7 @@ const AchievementsSection = () => {
       id: 2,
       title: "Realizarile noastre vorbesc.",
       description:
-        "Multitask like a boss. Create documents and presentations and collaborate across apps and video conferences — and do it all at once. Microsoft 365, Slack, Zoom, Keynote, Omni Productivity Suite, and more.",
+        "Alex Hantascu presented Project ECRIDA before an audience of inventors and innovators, showcasing our team’s work on 3D printing in microgravity using UV photopolymerization.",
       image: Achievement2,
       placeholder: "Achievement 2",
     },
@@ -47,7 +47,7 @@ const AchievementsSection = () => {
       id: 3,
       title: "Realizarile noastre vorbesc.",
       description:
-        "Multitask like a boss. Create documents and presentations and collaborate across apps and video conferences — and do it all at once. Microsoft 365, Slack, Zoom, Keynote, Omni Productivity Suite, and more.",
+        "Am avut plăcerea să prezentăm Camera Vantix pe scenă, în fața investitorilor și antreprenorilor. A fost o oportunitate de a arăta inovația produsului nostru și modul în care soluțiile Vantix pot transforma procesele prin automatizare, digitalizare și optimizarea activităților de administrare și raportare.",
       image: Achievement3,
       placeholder: "Achievement 3",
     },
@@ -55,7 +55,7 @@ const AchievementsSection = () => {
       id: 4,
       title: "Realizarile noastre vorbesc.",
       description:
-        "Multitask like a boss. Create documents and presentations and collaborate across apps and video conferences — and do it all at once. Microsoft 365, Slack, Zoom, Keynote, Omni Productivity Suite, and more.",
+        "La doar 17 ani, suceveanul Adrian Hănțăscu a câștigat multiple premii internaționale la robotică. Recent, împreună cu echipa națională, s-a întors de la Campionatul din Houston, SUA, unde robotul lor a obținut două distincții importante, grație talentului tinerilor și sprijinului companiilor care susțin excelența.",
       image: Achievement4,
       placeholder: "Achievement 4",
     },
@@ -222,7 +222,7 @@ const AchievementsSection = () => {
                   <div
                     key={`ach-${mapIndex}-${achievement.id}`}
                     ref={mapIndex === 1 ? firstCardRef : undefined}
-                    className="shrink-0 w-[260px] sm:w-[320px] md:w-[360px] lg:w-[420px]"
+                    className="shrink-0 w-[300px] sm:w-[320px] md:w-[360px] lg:w-[420px]"
                     onClick={() => goToSlide(realIndex)}
                   >
                     <motion.div
@@ -252,21 +252,47 @@ const AchievementsSection = () => {
                             : "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
                         }}
                       >
+                        {/* Active shimmer highlight */}
+                        <motion.div
+                          className="pointer-events-none absolute inset-0 rounded-[32px]"
+                          initial={false}
+                          animate={{
+                            opacity: isActive ? 1 : 0,
+                          }}
+                          transition={{ duration: 0.35 }}
+                        >
+                          <motion.div
+                            className="absolute -inset-y-10 -left-1/2 w-2/3 rotate-[20deg]"
+                            style={{
+                              background:
+                                "linear-gradient(110deg, transparent, rgba(255,255,255,0.08), transparent)",
+                            }}
+                            initial={false}
+                            animate={{
+                              x: isActive ? ["-50%", "170%"] : "-50%",
+                            }}
+                            transition={{ duration: 1.6, repeat: isActive ? Infinity : 0, repeatType: "loop" }}
+                          />
+                        </motion.div>
                         {/* Card Header */}
-                        <div className="p-8 pb-6">
-                          <h3 className="text-white text-xl font-medium text-center">
+                        <div className="p-6 ">
+                          <h3 className="text-white text-base lg:text-xl font-medium text-center">
                             {achievement.title}
                           </h3>
                         </div>
 
                         {/* Image Container */}
-                        <div className="relative w-full h-64 mb-6 px-8">
+                        <div className="relative w-full h-64 mb-6 px-6">
                           <div className="relative w-full h-full bg-gradient-to-br from-slate-700/20 to-slate-800/30 rounded-2xl overflow-hidden">
                             <Image
                               src={achievement.image}
                               alt={achievement.title}
                               fill
-                              className="object-cover"
+                              className={
+                                achievement.id === 4
+                                  ? "object-cover object-top"
+                                  : "object-cover "
+                              }
                             />
                           </div>
                         </div>
@@ -305,7 +331,7 @@ const AchievementsSection = () => {
                         }}
                       >
                         {/* Description Text */}
-                        <div className="px-8 py-8 flex justify-center items-center">
+                        <div className="px-6 py-6 flex justify-center items-center">
                           <p className="text-gray-300 text-center text-sm leading-relaxed">
                             {achievement.description}
                           </p>
