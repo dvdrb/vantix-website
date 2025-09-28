@@ -259,15 +259,15 @@ const FormInput = ({
         />
       </motion.div>
 
-      {/* Error message */}
+      {/* Error message (shown below the field) */}
       <AnimatePresence>
         {error && (
           <motion.div
-            className="absolute left-6 top-full mt-2 text-sm text-red-400"
-            initial={{ opacity: 0, y: -10 }}
+            className="mt-2 text-sm text-red-400"
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
           >
             {error}
           </motion.div>

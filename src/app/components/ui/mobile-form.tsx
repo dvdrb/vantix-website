@@ -334,9 +334,9 @@ const MobileFormInput = ({
         </div>
       </div>
 
-      {/* Error message */}
+      {/* Error message (shown below the field) */}
       {error && (
-        <div className={`absolute top-full mt-2 text-red-400 text-sm px-2`}>
+        <div className="mt-2 text-red-400 text-sm px-2">
           {error}
         </div>
       )}

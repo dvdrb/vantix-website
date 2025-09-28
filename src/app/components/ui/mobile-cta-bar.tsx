@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 const MobileCtaBar = () => {
   const [visible, setVisible] = useState(true);
+  const [showByScroll, setShowByScroll] = useState(true);
   const [typing, setTyping] = useState(false);
 
   useEffect(() => {
@@ -38,10 +39,28 @@ const MobileCtaBar = () => {
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
 
+    // Scroll direction based show/hide (show when scrolling up or near top)
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      lastY = y;
+      if (Math.abs(delta) < 6) return; // ignore tiny jitters
+      if (delta > 0 && y > 100) {
+        // scrolling down
+        setShowByScroll(false);
+      } else {
+        // scrolling up or near top
+        setShowByScroll(true);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     return () => {
       observer?.disconnect();
       document.removeEventListener("focusin", onFocusIn);
       document.removeEventListener("focusout", onFocusOut);
+      window.removeEventListener('scroll', onScroll);
     };
   }, []);
 
@@ -51,7 +70,7 @@ const MobileCtaBar = () => {
       className="md:hidden fixed left-0 right-0 z-[55]"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: visible && !typing ? 1 : 0, y: visible && !typing ? 0 : 20 }}
+      animate={{ opacity: visible && !typing && showByScroll ? 1 : 0, y: visible && !typing && showByScroll ? 0 : 20 }}
       transition={{ duration: 0.25 }}
     >
       <div className="mx-auto max-w-md px-4">
@@ -66,6 +85,12 @@ const MobileCtaBar = () => {
             href="#contact"
             className="flex-1 inline-flex items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium text-white"
             style={{ borderColor: "rgba(146,232,241,0.25)", background: "rgba(146,232,241,0.12)" }}
+            onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('open-contact'));
+              }
+            }}
           >
             Contacteaza-ne
           </a>
@@ -86,4 +111,3 @@ const MobileCtaBar = () => {
 };
 
 export default MobileCtaBar;
-
