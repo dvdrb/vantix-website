@@ -29,6 +29,7 @@ export default function Home() {
     // Add smooth scroll behavior to the document
     document.documentElement.style.scrollBehavior = "smooth";
 
+    console.log(isLoading);
     // Simulate loading time for assets and initial setup
     const loadingTimer = setTimeout(() => {
       setIsLoading(false);
