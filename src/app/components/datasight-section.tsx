@@ -181,7 +181,7 @@ const DataSightShowcase = () => {
           </ScrollReveal>
         </motion.div>
 
-        {/* Realizarile noastre vorbesc */}
+        {/* Realizarile noastre vorbesc
         <ScrollReveal
           delay={0.2}
           direction="up"
@@ -193,7 +193,7 @@ const DataSightShowcase = () => {
             <br />
             vorbesc.
           </h2>
-        </ScrollReveal>
+        </ScrollReveal> */}
 
         {/* Laptop Carousel */}
         <div className="flex-1 flex items-center justify-center mb-8">

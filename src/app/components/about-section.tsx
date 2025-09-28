@@ -134,7 +134,7 @@ const AboutSection = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-8">
         {/* Title */}
         <motion.header
-          className="text-center pt-8 mb-16"
+          className="text-center pt-8 mb-10"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6, ease: cubicBezier(0.16, 1, 0.3, 1) }}
@@ -146,7 +146,8 @@ const AboutSection = () => {
             Despre VANTIX
           </h2>
           <p className="sr-only">
-            Echipa VANTIX - Adrian și Alexandru Hănțăscu, co-fondatorii companiei de soluții software inovative
+            Echipa VANTIX - Adrian și Alexandru Hănțăscu, co-fondatorii
+            companiei de soluții software inovative
           </p>
         </motion.header>
 
@@ -158,11 +159,7 @@ const AboutSection = () => {
             <motion.div
               className="relative w-full max-w-sm aspect-[4/4]"
               initial={{ opacity: 0, y: 30 }}
-              animate={
-                isInView
-                  ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 30 }
-              }
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{
                 duration: 0.8,
                 ease: cubicBezier(0.6, -0.05, 0.01, 0.99),
@@ -184,11 +181,7 @@ const AboutSection = () => {
             <motion.div
               className="relative w-full max-w-sm aspect-[4/4]"
               initial={{ opacity: 0, y: 30 }}
-              animate={
-                isInView
-                  ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 30 }
-              }
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{
                 duration: 0.8,
                 ease: cubicBezier(0.6, -0.05, 0.01, 0.99),

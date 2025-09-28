@@ -191,7 +191,7 @@ const AchievementsSection = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-8 min-h-screen flex flex-col justify-between">
         {/* Main Title */}
         <motion.div
-          className="text-center pt-16 mb-20"
+          className="text-center pt-16 mb-6"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -221,9 +221,15 @@ const AchievementsSection = () => {
               dragElastic={0.03}
               onDragStart={() => setDragging(true)}
               onDragEnd={(_, info) => {
-                if (animatingRef.current) { setDragging(false); return; }
+                if (animatingRef.current) {
+                  setDragging(false);
+                  return;
+                }
                 setDragging(false);
-                const pixelThreshold = Math.max(40, (layout.cardW + layout.gap) * 0.15);
+                const pixelThreshold = Math.max(
+                  40,
+                  (layout.cardW + layout.gap) * 0.15
+                );
                 const delta = info.offset.x;
                 if (delta < -pixelThreshold) {
                   void nextSlide();
@@ -299,7 +305,11 @@ const AchievementsSection = () => {
                             animate={{
                               x: isActive ? ["-50%", "170%"] : "-50%",
                             }}
-                            transition={{ duration: 1.6, repeat: isActive ? Infinity : 0, repeatType: "loop" }}
+                            transition={{
+                              duration: 1.6,
+                              repeat: isActive ? Infinity : 0,
+                              repeatType: "loop",
+                            }}
                           />
                         </motion.div>
                         {/* Card Header */}
