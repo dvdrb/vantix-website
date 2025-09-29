@@ -25,7 +25,6 @@ export default function Home() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log('hhhhh')
 
     // Add smooth scroll behavior to the document
     document.documentElement.style.scrollBehavior = "smooth";
