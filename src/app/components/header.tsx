@@ -1,136 +1,177 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
+import Logo from "../../assets/photos/vantix-logo.svg";
 
-// Magnetic cursor hook
-function useMagneticCursor(
-  ref: React.RefObject<HTMLElement | null>,
-  intensity = 0.3
-) {
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = element.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      const distance = Math.sqrt(x * x + y * y);
-      const maxDistance = Math.max(rect.width, rect.height);
-
-      if (distance < maxDistance) {
-        const factor = (maxDistance - distance) / maxDistance;
-        element.style.transform = `translate(${x * intensity * factor}px, ${
-          y * intensity * factor
-        }px)`;
-      }
-    };
-
-    const handleMouseLeave = () => {
-      element.style.transform = "translate(0, 0)";
-    };
-
-    element.addEventListener("mousemove", handleMouseMove);
-    element.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      element.removeEventListener("mousemove", handleMouseMove);
-      element.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, [ref, intensity]);
-}
-
-const GlassHeader = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
-
-  useMagneticCursor(headerRef, 0.2);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
-      setScrolled(isScrolled);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
-      {/* Fixed Header */}
-      <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div
-          ref={headerRef}
-          className={`
-              relative overflow-hidden transition-all duration-500 ease-out h-[84px] w-[194px] cursor-pointer
-              ${
-                scrolled
-                  ? "shadow-2xl shadow-cyan-500/20"
-                  : "shadow-lg shadow-cyan-500/10"
-              }
-            `}
-          style={{
-            borderRadius: "124px",
-            background: "rgba(146, 232, 241, 0.08)",
-            border: "1px solid rgba(146, 232, 241, 0.18)",
-            backdropFilter: scrolled
-              ? "blur(20px) saturate(180%) brightness(108%)"
-              : "blur(15px) saturate(150%) brightness(103%)",
-          }}
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-        >
-          {/* Fallback content for when 3D doesn't load */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span
-              className={`
-                  font-normal text-2xl header leading-normal tracking-wide transition-all duration-300 relative z-10
-                  ${
-                    scrolled
-                      ? "text-white opacity-100"
-                      : "text-gray-100 opacity-100"
-                  }
-                `}
-              style={{
-                textShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-              }}
+      <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-lg z-50 border-b border-gray-200/50">
+        <nav className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <Image src={Logo} alt="Vantix logo" width={35} height={30} />
+            <h1 className="font-nromal text-2xl text-black">VANTIX</h1>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a
+                href="#"
+                className="text-gray-700 hover:text-cyan-600 transition-colors font-medium"
+              >
+                Home
+              </a>
+              <a
+                href="#"
+                className="text-gray-700 hover:text-cyan-600 transition-colors font-medium"
+              >
+                Features
+              </a>
+              <a
+                href="#"
+                className="text-gray-700 hover:text-cyan-600 transition-colors font-medium"
+              >
+                About
+              </a>
+              <a
+                href="#"
+                className="text-gray-700 hover:text-cyan-600 transition-colors font-medium"
+              >
+                Contact
+              </a>
+              <button className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-2.5 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                Get Started
+              </button>
+            </div>
+
+            {/* Hamburger Menu Button */}
+            <button
+              className="md:hidden relative w-10 h-10 flex items-center justify-center focus:outline-none group"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
             >
-              VANTIX
-            </span>
+              <div className="w-6 h-5 flex flex-col justify-between">
+                <span
+                  className={`block h-0.5 w-full bg-cyan-600 transition-all duration-300 origin-center ${
+                    mobileMenuOpen ? "rotate-45 translate-y-2" : ""
+                  }`}
+                ></span>
+                <span
+                  className={`block h-0.5 w-full bg-cyan-600 transition-all duration-300 ${
+                    mobileMenuOpen
+                      ? "opacity-0 scale-0"
+                      : "opacity-100 scale-100"
+                  }`}
+                ></span>
+                <span
+                  className={`block h-0.5 w-full bg-cyan-600 transition-all duration-300 origin-center ${
+                    mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+                  }`}
+                ></span>
+              </div>
+            </button>
           </div>
+        </nav>
 
-          {/* Enhanced glass overlay */}
-          <div
-            className="absolute inset-0"
-            style={{
-              borderRadius: "124px",
-              background:
-                "linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, transparent 50%, rgba(146, 232, 241, 0.04) 100%)",
-              pointerEvents: "none",
-            }}
-          />
-        </div>
-
-        {/* External glow effect */}
+        {/* Modern Mobile Menu Dropdown */}
         <div
-          className={`
-              absolute inset-0 transition-opacity duration-500 -z-10
-              ${scrolled ? "opacity-40" : "opacity-25"}
-            `}
-          style={{
-            borderRadius: "124px",
-            background:
-              "radial-gradient(ellipse at center, rgba(146, 232, 241, 0.25) 0%, transparent 70%)",
-            filter: "blur(12px)",
-            transform: "scale(1.2)",
-          }}
-        />
+          className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${
+            mobileMenuOpen ? "max-h-screen" : "max-h-0"
+          }`}
+        >
+          <div className="bg-white/95 backdrop-blur-xl border-t border-gray-200/50">
+            {/* Navigation Links */}
+            <nav className="px-6 py-6">
+              <div className="space-y-1">
+                <a
+                  href="#"
+                  className="flex items-center space-x-4 px-4 py-4 rounded-xl text-gray-700 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 hover:text-cyan-600 transition-all duration-300 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span className="text-lg font-medium">Home</span>
+                  <svg
+                    className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="#"
+                  className="flex items-center space-x-4 px-4 py-4 rounded-xl text-gray-700 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 hover:text-cyan-600 transition-all duration-300 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span className="text-lg font-medium">Features</span>
+                  <svg
+                    className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="#"
+                  className="flex items-center space-x-4 px-4 py-4 rounded-xl text-gray-700 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 hover:text-cyan-600 transition-all duration-300 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span className="text-lg font-medium">About</span>
+                  <svg
+                    className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="#"
+                  className="flex items-center space-x-4 px-4 py-4 rounded-xl text-gray-700 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 hover:text-cyan-600 transition-all duration-300 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span className="text-lg font-medium">Contact</span>
+                  <svg
+                    className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
       </header>
+
+      {/* Spacer to prevent content from going under fixed header */}
+      <div className="h-20"></div>
     </>
   );
-};
-
-export default GlassHeader;
+}
