@@ -39,11 +39,63 @@ body {
 }
 
 header {
-  background-color: #f5f5f5;
+  background-color: rgba(245, 245, 245, 0.9);
 }
-/* Global smooth scrolling for anchor navigation */
+/* Remove global smooth scroll to avoid unwanted refresh scroll */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+}
+
+/* Button interactions */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 150ms ease;
+  transform: translateY(0) scale(1);
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.btn-ghost {
+  transition: transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 150ms ease;
+  border-radius: 0.5rem;
+  touch-action: manipulation;
+}
+
+.btn-ghost:hover {
+  transform: translateY(-1px);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.btn-ghost:active {
+  transform: translateY(0);
+}
+
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn-ghost {
+    transition: none;
+    transform: none !important;
+  }
 }
 
 /* Pop-in animation for hero decorative shapes */
@@ -79,4 +131,130 @@ html {
 .cv-auto {
   content-visibility: auto;
   contain-intrinsic-size: 1000px 800px; /* fallback size to prevent layout shift */
+}
+
+/* Slide-in from left animations */
+@keyframes slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left-strong {
+  0% {
+    opacity: 0;
+    transform: translateX(-160px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-left {
+  animation: slide-in-left 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.slide-in-left-strong {
+  animation: slide-in-left-strong 1200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-in-left,
+  .slide-in-left-strong {
+    animation: none;
+  }
+}
+
+/* Reveal on scroll: left */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-180px);
+  transition: transform 1200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 700ms ease;
+  will-change: transform, opacity;
+}
+
+.reveal-left.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-left,
+  .reveal-left.is-visible {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Reveal on scroll: right */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(180px);
+  transition: transform 1200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 700ms ease;
+  will-change: transform, opacity;
+}
+
+.reveal-right.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-right,
+  .reveal-right.is-visible {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Desktop-only reveal: left/right slide-in for Solution section */
+@media (min-width: 768px) {
+  .reveal-left-desktop {
+    opacity: 0;
+    transform: translateX(-180px);
+    transition: transform 1100ms cubic-bezier(0.16, 1, 0.3, 1), opacity 700ms ease;
+    will-change: transform, opacity;
+  }
+
+  .reveal-left-desktop.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+    /* Slightly larger delay so it starts after entering viewport */
+    transition-delay: 200ms, 200ms;
+  }
+
+  .reveal-right-desktop {
+    opacity: 0;
+    transform: translateX(180px);
+    transition: transform 1100ms cubic-bezier(0.16, 1, 0.3, 1), opacity 700ms ease;
+    will-change: transform, opacity;
+  }
+
+  .reveal-right-desktop.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+    /* Staggered slightly after left for a nicer reveal */
+    transition-delay: 320ms, 320ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (min-width: 768px) {
+  .reveal-left-desktop,
+  .reveal-left-desktop.is-visible,
+  .reveal-right-desktop,
+  .reveal-right-desktop.is-visible {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
 }

@@ -1,11 +1,31 @@
+"use client";
 import Image from "next/image";
+import { useRef } from "react";
+import { useScrollTrigger } from "../hooks/useScrollTrigger";
+import { smoothScrollTo } from "../utils/smooth-scroll";
 
 import laptopImg from "../../assets/photos/laptop.webp";
 
 export default function HeroSection() {
+  const mobileImgRef = useRef<HTMLDivElement | null>(null);
+  const desktopImgRef = useRef<HTMLDivElement | null>(null);
+  const mobileScroll = useScrollTrigger(mobileImgRef, { threshold: 0.01, once: false });
+  const desktopScroll = useScrollTrigger(desktopImgRef, { threshold: 0.01, once: false });
+
+  const handleScrollToSolution = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    const headerEl = document.querySelector("header") as HTMLElement | null;
+    const offset = headerEl?.offsetHeight || 0;
+    smoothScrollTo("solution", offset);
+  };
+
   return (
     <>
-      <div id="home" data-scroll-id="home" className="max-w-7xl mx-auto py-16  flex justify-center  gap-8 items-center scroll-mt-20">
+      <div
+        id="home"
+        data-scroll-id="home"
+        className="max-w-7xl mx-auto pt-16  flex justify-center  gap-8 items-center scroll-mt-20"
+      >
         <div className="flex  flex-col items-center md:items-start gap-4 md:gap-11">
           <div className="text-3xl px-9 self-start ml-5 text-black font-extrabold leading-7 mt-7">
             <span className="text-black">Echipe greu de </span>
@@ -30,7 +50,12 @@ export default function HeroSection() {
                 SOLUTION
               </p>
             </div>
-            <div className="overflow-hidden w-full flex md:hidden items-center h-[280px] sm:h-[350px]">
+            <div
+              ref={mobileImgRef}
+              className={`overflow-hidden w-full flex md:hidden items-center h-[280px] sm:h-[350px] reveal-left ${
+                mobileScroll.isVisible ? "is-visible" : ""
+              }`}
+            >
               <Image
                 src={laptopImg}
                 alt="Half laptop "
@@ -41,9 +66,13 @@ export default function HeroSection() {
                   Soluția la forța de munca ineficienta
                 </h4>
 
-                <button className="bg-primary border-0 [box-shadow:4px_4px_4px_0_rgba(0,0,0,0.25)] hover:bg-cyan-600 text-white font-normal py-[10px] px-6 rounded-xl transition-colors duration-300 shadow-lg text-sm">
+                <a
+                  href="#solution"
+                  className="btn no-underline bg-primary border-0 [box-shadow:4px_4px_4px_0_rgba(0,0,0,0.25)] hover:bg-cyan-600 text-white font-normal py-[10px] px-6 rounded-xl transition-colors duration-300 shadow-lg text-sm"
+                  onClick={handleScrollToSolution}
+                >
                   Vezi mai multe
-                </button>
+                </a>
               </div>
             </div>
 
@@ -52,14 +81,23 @@ export default function HeroSection() {
                 {" "}
                 Solutia la forta de munca ineficienta
               </p>
-              <button className="font-normal text-sm leading-normal text-white py-[10px] px-6 bg-primary rounded-xl [box-shadow:4px_4px_4px_0_rgba(0,0,0,0.25)] h-10 border-0 ">
+              <a
+                href="#solution"
+                className="btn no-underline font-normal text-sm leading-normal text-white py-[10px] px-6 bg-primary rounded-xl [box-shadow:4px_4px_4px_0_rgba(0,0,0,0.25)] h-10 border-0"
+                onClick={handleScrollToSolution}
+              >
                 Vezi mai multe
-              </button>
+              </a>
             </div>
           </div>
         </div>
 
-        <div className="relative pr-9 w-[800px] [height:-webkit-fill-available] hidden md:block ">
+        <div
+          ref={desktopImgRef}
+          className={`relative pr-9 w-[800px] [height:-webkit-fill-available] hidden md:block reveal-left ${
+            desktopScroll.isVisible ? "is-visible" : ""
+          }`}
+        >
           <Image
             src={laptopImg}
             alt="Laptop software UI preview"

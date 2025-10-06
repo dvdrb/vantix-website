@@ -1,17 +1,34 @@
+"use client";
 import Image from "next/image";
+import { useRef } from "react";
+import { useScrollTrigger } from "../hooks/useScrollTrigger";
 import AdrianPhoto from "../../assets/photos/adi-photo.png";
 import AlexPhoto from "../../assets/photos/alex-photo.png";
 import RaduPhoto from "../../assets/photos/radu-photo.jpg";
 
 export default function AboutUsSection() {
+  const founderLeftRef = useRef<HTMLDivElement | null>(null);
+  const founderRightRef = useRef<HTMLDivElement | null>(null);
+  const leftVis = useScrollTrigger(founderLeftRef, { threshold: 0.1, once: false });
+  const rightVis = useScrollTrigger(founderRightRef, { threshold: 0.1, once: false });
+
   return (
     <>
-      <div id="about" data-scroll-id="about" className="flex flex-col md:flex-row px-9 items-center md:items-start gap-[90px]  mx-auto justify-center scroll-mt-20">
+      <div
+        id="about"
+        data-scroll-id="about"
+        className="flex flex-col md:flex-row max-w-7xl mx-auto px-6 md:px-8 py-5 md:py-8 items-center md:items-start gap-[90px] justify-center scroll-mt-20"
+      >
         <div className="flex flex-col ">
           <h4 className="text-2xl text-black [text-shadow:0_2px_4px_rgba(0,0,0,0.25)] font-normal leading-normal text-center mb-6 md:mb-[88px]">
             Founders
           </h4>
-          <div className="mb-11 gap-2 flex items-start">
+          <div
+            ref={founderLeftRef}
+            className={`mb-11 gap-2 flex items-start reveal-left ${
+              leftVis.isVisible ? "is-visible" : ""
+            }`}
+          >
             <div>
               <p className="text-black  m-0 italic text-xl leading-5 font-light">
                 Hănțăscu
@@ -30,7 +47,12 @@ export default function AboutUsSection() {
               className="object-contain"
             />
           </div>
-          <div className=" flex gap-2 items-start">
+          <div
+            ref={founderRightRef}
+            className={`flex gap-2 items-start reveal-right ${
+              rightVis.isVisible ? "is-visible" : ""
+            }`}
+          >
             <Image
               src={AdrianPhoto}
               alt="Alexandru Hantascu"

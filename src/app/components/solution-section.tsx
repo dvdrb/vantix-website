@@ -1,12 +1,38 @@
+"use client";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { useScrollTrigger } from "../hooks/useScrollTrigger";
 import laptopImg from "../../assets/photos/laptop.webp";
 import CameraImg from "../../assets/photos/camera.png";
 
 export default function SolutionSection() {
+  const leftRef = useRef<HTMLDivElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+
+  // Compute header height to delay reveal until content is below fixed header
+  const [headerOffset, setHeaderOffset] = useState(0);
+  useEffect(() => {
+    const measure = () => {
+      const headerEl = document.querySelector("header") as HTMLElement | null;
+      setHeaderOffset(headerEl?.offsetHeight || 0);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Top root margin pushes trigger down by header height + a small buffer
+  const rootMargin = `-${Math.max(0, headerOffset + 12)}px 0px -10% 0px`;
+  const leftScroll = useScrollTrigger(leftRef, { threshold: 0.15, rootMargin, once: false });
+  const rightScroll = useScrollTrigger(rightRef, { threshold: 0.15, rootMargin, once: false });
   return (
     <>
-      <div id="solution" data-scroll-id="solution" className="max-w-7xl mx-auto px-9   lg:px-15 flex flex-col items-center justify-center  gap-2 scroll-mt-20">
-        <div className="md:flex hidden flex-col justify-center items-center gap-10 w-[285px]">
+      <div
+        id="solution"
+        data-scroll-id="solution"
+        className="max-w-7xl mx-auto px-6 md:px-8 py-5 md:py-8 flex flex-col items-center justify-center gap-6 scroll-mt-20"
+      >
+        <div className="flex  flex-col justify-center items-center gap-10 w-[285px]">
           <div className="[text-shadow:0_2px_4px_rgba(0,0,0,0.25)] text-black text-[40px]  font-normal leading-normal">
             <p className="my-0 text-center">DATASIGHT</p>
 
@@ -22,8 +48,13 @@ export default function SolutionSection() {
           </p>
         </div>
 
-        <div className="flex md:justify-around md:gap-16 md:flex-row flex-col gap-11  items-center w-full">
-          <div className="flex flex-col gap-13 w-[285px] order-1 ">
+        <div className="flex md:justify-between md:gap-16 md:flex-row flex-col gap-11 items-center w-full">
+          <div
+            ref={leftRef}
+            className={`flex flex-col gap-13 w-[285px] order-1 reveal-left-desktop ${
+              leftScroll.isVisible ? "is-visible" : ""
+            }`}
+          >
             <Image
               src={laptopImg}
               alt="Laptop image"
@@ -66,11 +97,18 @@ export default function SolutionSection() {
             <p className="m-0 text-lg font-normal [text-shadow:0_2px_4px_rgba(0,0,0,0.25)] text-center text-black leading-normal">
               Contacteaza-ne pentru mai multe detalii
             </p>
-            <button className="w-fit px-6 py-3 bg-primary border-0 flex items-center justify-center text-white rounded-xl h-10 text-[14px] font-normal leading-5">
-              Contacteaza-ne
-            </button>
+            <a href="#contact" className="no-underline btn">
+              <span className="inline-flex px-6 py-3 bg-primary border-0 items-center justify-center text-white rounded-xl h-10 text-[14px] font-normal leading-5">
+                Contacteaza-ne
+              </span>
+            </a>
           </div>
-          <div className="flex flex-col md:self-start gap-13 order-2 md:order-3">
+          <div
+            ref={rightRef}
+            className={`flex flex-col md:self-start gap-13 order-2 md:order-3 reveal-right-desktop ${
+              rightScroll.isVisible ? "is-visible" : ""
+            }`}
+          >
             <Image
               src={CameraImg}
               alt="Camera image"
@@ -108,9 +146,11 @@ export default function SolutionSection() {
               <p className="m-0 text-lg font-normal [text-shadow:0_2px_4px_rgba(0,0,0,0.25)] text-center text-black leading-normal">
                 Contacteaza-ne pentru mai multe detalii
               </p>
-              <button className="w-fit px-6 py-3 bg-primary border-0 flex items-center justify-center text-white rounded-xl h-10 text-[14px] font-normal leading-5">
-                Contacteaza-ne
-              </button>
+              <a href="#contact" className="no-underline btn">
+                <span className="inline-flex px-6 py-3 bg-primary border-0 items-center justify-center text-white rounded-xl h-10 text-[14px] font-normal leading-5">
+                  Contacteaza-ne
+                </span>
+              </a>
             </div>
           </div>
         </div>

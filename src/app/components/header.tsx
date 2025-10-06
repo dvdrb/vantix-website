@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { MouseEvent, useCallback, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import Logo from "../../assets/photos/vantix-logo.svg";
 import { smoothScrollTo } from "../utils/smooth-scroll";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   const handleNavClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -19,11 +20,22 @@ export default function Header() {
     []
   );
 
+  useEffect(() => {
+    const onScroll = () => setHasScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
-      <header className="fixed top-0 left-0 right-0  z-50 ">
-        <nav className="hidden lg:block max-w-7xl mx-auto px-9 lg:px-8 py-4 ">
-          <div className="flex justify-between items-center ">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+          hasScrolled ? "backdrop-blur-md shadow-sm" : ""
+        }`}
+      >
+        <nav className="hidden lg:block max-w-7xl mx-auto px-6 lg:px-8 ">
+          <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <Image src={Logo} alt="Vantix logo" width={52} height={45} />
               <h1 className="font-extralight text-4xl leading-normal text-black">
@@ -34,29 +46,29 @@ export default function Header() {
             {/* Desktop Navigation */}
 
             <a
-              href="#achievements"
-              className="text-black hover:text-grey-700 text-base leading-normal font-medium no-underline"
+              href="#about"
+              className="text-black/90 hover:text-black text-base font-medium no-underline"
               onClick={(e) => handleNavClick(e, "about")}
             >
               Despre Noi
             </a>
             <a
               href="#about"
-              className="text-black hover:text-grey-700 text-base leading-normal font-medium no-underline"
+              className="text-black/90 hover:text-black text-base font-medium no-underline"
               onClick={(e) => handleNavClick(e, "about")}
             >
               Echipa Vantix
             </a>
             <a
               href="#contact"
-              className="text-black hover:text-grey-700 text-base leading-normal font-medium no-underline"
+              className="text-black/90 hover:text-black text-base font-medium no-underline"
               onClick={(e) => handleNavClick(e, "contact")}
             >
               Contacteaza-ne
             </a>
             <a
               href="#solution"
-              className="text-black hover:text-grey-700 text-xl leading-normal font-medium no-underline"
+              className="text-black hover:text-black text-lg leading-tight font-medium no-underline"
               onClick={(e) => handleNavClick(e, "solution")}
             >
               DATASIGHT <br /> SOLUTION
@@ -65,13 +77,13 @@ export default function Header() {
             {/* Hamburger Menu Button */}
           </div>
         </nav>
-        <div className="lg:hidden py-5  px-9 flex justify-between items-center">
+        <div className="lg:hidden py-5 px-6 flex justify-between items-center">
           <Image src={Logo} alt="Vantix logo" width={35} height={30} />
           <h1 className="font-extralight text-2xl leading-normal text-black">
             VANTIX
           </h1>
           <button
-            className=" relative w-9 h-9 flex items-center border-0 bg-transparent justify-center focus:outline-none group"
+            className="btn-ghost relative w-9 h-9 flex items-center border-0 bg-transparent justify-center focus:outline-none group"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -103,10 +115,10 @@ export default function Header() {
         >
           <div className="white-bg backdrop-blur-xl border-t border-gray-200/50">
             {/* Navigation Links */}
-            <nav className="px-6 py-6">
+            <nav className="px-4 py-6">
               <div className="space-y-1">
                 <a
-                  href="#achievements"
+                  href="#about"
                   className="flex items-center space-x-4 px-4 py-4 rounded-xl text-gray-700 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 hover:text-cyan-600 transition-all duration-300 group no-underline"
                   onClick={(e) => handleNavClick(e, "about")}
                 >

@@ -7,9 +7,9 @@ export default function AchievementSection() {
       <div
         id="achievements"
         data-scroll-id="achievements"
-        className="flex-col mx-auto  px-9 flex justify-center items-center max-w-[560px] scroll-mt-20"
+        className="flex-col md:mx-auto px-6 px-8 mx-7 py-5 md:py-8 flex justify-center items-center max-w-[820px] scroll-mt-20"
       >
-        <div className="gap-10 flex mb-20">
+        <div className="gap-10 flex items-center mb-20">
           <p className="m-0 text-2xl font-normal leading-normal text-black ">
             VANTIX
           </p>
@@ -30,7 +30,7 @@ export default function AchievementSection() {
               operation.
             </p>
           </div>
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-10 mt-11 md:mt-0">
             <p className=" m-0 text-black text-xl font-semibold leading-normal [text-shadow:0_4px_4px_rgba(0,0,0,0.25)]">
               Ce asteptari poti avea:
             </p>

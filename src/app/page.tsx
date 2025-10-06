@@ -6,16 +6,16 @@ import SolutionSection from "./components/solution-section";
 
 const Mobile = () => {
   return (
-    <div className="gap-22 flex flex-col">
-      <HeroSection></HeroSection>
-      <SolutionSection></SolutionSection>
-      <AchievementSection></AchievementSection>
-      <AboutUsSection></AboutUsSection>
-      <ContactForm></ContactForm>
-      <p className="text-secondary text-center mb-7 text-sm leading-normal">
+    <main id="main" role="main" className="gap-22 flex flex-col">
+      <HeroSection />
+      <SolutionSection />
+      <AchievementSection />
+      <AboutUsSection />
+      <ContactForm />
+      <p className="   text-gray-400 text-center mb-7 text-sm leading-normal">
         @2025 Soft&Mark all rights reserved
       </p>
-    </div>
+    </main>
   );
 };
 export default Mobile;

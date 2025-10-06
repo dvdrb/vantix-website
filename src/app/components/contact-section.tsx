@@ -3,27 +3,34 @@ import vantixLogo from "../../assets/photos/vantix-logo.svg";
 
 export default function ContactForm() {
   return (
-    <div id="contact" data-scroll-id="contact" className="min-h-screen  flex items-center justify-center px-6 py-16 scroll-mt-20">
+    <div
+      id="contact"
+      data-scroll-id="contact"
+      className="min-h-screen flex items-center justify-center px-6 md:px-8 py-5 md:py-8 scroll-mt-20"
+    >
       <div className="w-full max-w-5xl">
         {/* Logo and Title */}
         <div className="flex items-center justify-center gap-6 mb-6">
-          <h3 className="text-2xl text-black ffont-extralight ">VANTIX</h3>
+          <h3 className="text-2xl text-black font-extralight">VANTIX</h3>
           <Image src={vantixLogo} alt="Vantix logo" width={35} height={30} />
         </div>
 
-        <h4 className="text-2xl leading-normal text-black text-center mb-20 font-normal text-black">
+        <h4 className="text-2xl leading-normal text-black text-center mt-0 mb-20 font-normal text-black">
           Solicită un demo:
         </h4>
 
-        <div className="flex items-center justify-center flex-col md:flex-row  gap-0">
+        <div className="flex items-center justify-center flex-col md:flex-row gap-0">
           {/* Form Section */}
-          <div className="flex-1 flex flex-col max-w-[350px] gap-12 lg:pr-16">
+          <form className="flex-1 flex flex-col max-w-[350px] gap-12 lg:pr-16">
             <div className="relative pt-4">
               <input
                 type="text"
                 id="fullName"
+                name="fullName"
                 className="peer w-full bg-transparent border-b border-0 border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent"
                 placeholder="Numele dvs. complet"
+                autoComplete="name"
+                required
               />
               <label
                 htmlFor="fullName"
@@ -39,8 +46,11 @@ export default function ContactForm() {
               <input
                 type="email"
                 id="email"
+                name="email"
                 className="peer w-full bg-transparent border-b border-0 border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent"
                 placeholder="Adresa de email"
+                autoComplete="email"
+                required
               />
               <label
                 htmlFor="email"
@@ -56,8 +66,10 @@ export default function ContactForm() {
               <input
                 type="tel"
                 id="phone"
+                name="phone"
                 className="peer w-full bg-transparent border-b border-0 border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent"
                 placeholder="Numarul de telefon (optional)"
+                autoComplete="tel"
               />
               <label
                 htmlFor="phone"
@@ -70,11 +82,12 @@ export default function ContactForm() {
             </div>
 
             <div className="relative pt-4">
-              <input
-                type="text"
+              <textarea
                 id="message"
-                className="peer w-full bg-transparent border-0 border-b border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent"
+                name="message"
+                className="peer w-full bg-transparent border-0 border-b border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent resize-y min-h-[48px]"
                 placeholder="Mesajul dvs. (optional)"
+                rows={3}
               />
               <label
                 htmlFor="message"
@@ -90,8 +103,10 @@ export default function ContactForm() {
               <input
                 type="text"
                 id="company"
+                name="company"
                 className="peer w-full bg-transparent border-b border-0 border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent"
                 placeholder="Compania dvs. (optional)"
+                autoComplete="organization"
               />
               <label
                 htmlFor="company"
@@ -103,27 +118,32 @@ export default function ContactForm() {
               </label>
             </div>
 
-            <button className="w-full bg-primary border-0 text-white py-4 px-6 rounded-xl text-[18px] font-normal mt-8 w-fit">
+            <button
+              type="submit"
+              className="btn w-full bg-primary border-0 text-white py-4 px-6 rounded-xl text-[18px] font-normal mt-4"
+            >
               Trimite mesaj
             </button>
-          </div>
+          </form>
           {/* Contact Info Section */}
           <div className="flex flex-col border-t md:border-0 border-black justify-center mt-12 lg:mt-0 lg:pl-4">
             <div className="space-y-4 md:border-l border-black pl-4">
               <div>
-                <p className="text-xl mb-0 font-normal">Email:</p>
+                <p className="md:text-xl text-base mb-0 font-normal">Email:</p>
                 <a
                   href="mailto:contact@vantix.ro"
-                  className="text-xl mt-0 no-underline hover:text-[#2d7a9f] hover:underline transition-all duration-200 text-black font-normal"
+                  className="md:text-xl text-base mt-0 no-underline hover:text-[#2d7a9f] hover:underline transition-all duration-200 text-black font-normal"
                 >
                   contact@vantix.ro
                 </a>
               </div>
-              <div className="mt-6">
-                <p className="text-xl mb-0 font-normal">Numar de contact:</p>
+              <div className="md:mt-6 mt-2">
+                <p className="md:text-xl text-base mb-0 font-normal">
+                  Numar de contact:
+                </p>
                 <a
                   href="tel:+40756066164"
-                  className=" no-underline text-xl mt-0 hover:text-[#2d7a9f] hover:underline transition-all duration-200 text-black font-normal"
+                  className=" no-underline md:text-xl text-base mt-0 hover:text-[#2d7a9f] hover:underline transition-all duration-200 text-black font-normal"
                 >
                   +40756066164
                 </a>
