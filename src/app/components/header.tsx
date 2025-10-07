@@ -1,13 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Menu, X } from "lucide-react";
+import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import Logo from "../../assets/photos/vantix-logo.svg";
 import { smoothScrollTo } from "../utils/smooth-scroll";
 
@@ -53,84 +48,80 @@ export default function Header() {
       <header
         ref={headerRef}
         className={`sticky md:fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300 bg-[rgba(245,245,245,0.9)] ${
-          hasScrolled ? "md:backdrop-blur-md shadow-sm border-b border-gray-200/60" : ""
+          hasScrolled
+            ? "md:backdrop-blur-md shadow-sm border-b border-gray-200/60"
+            : ""
         }`}
       >
         {/* Header bar (measured for spacer) */}
         <div ref={barRef}>
-        <nav className="hidden lg:block max-w-7xl mx-auto px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Image src={Logo} alt="Vantix logo" width={52} height={45} />
-              <h1 className="font-extralight text-4xl leading-normal text-black">
-                VANTIX
-              </h1>
+          <nav className="hidden lg:block max-w-7xl mx-auto px-6 lg:px-8 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <Image src={Logo} alt="Vantix logo" width={52} height={45} />
+                <h1 className="font-extralight text-4xl leading-normal text-black">
+                  VANTIX
+                </h1>
+              </div>
+
+              {/* Desktop Navigation */}
+
+              <a
+                href="#about"
+                className="text-black/90 hover:text-black text-base font-medium no-underline"
+                onClick={(e) => handleNavClick(e, "about")}
+              >
+                Despre Noi
+              </a>
+              <a
+                href="#about"
+                className="text-black/90 hover:text-black text-base font-medium no-underline"
+                onClick={(e) => handleNavClick(e, "about")}
+              >
+                Echipa Vantix
+              </a>
+              <a
+                href="#contact"
+                className="text-black/90 hover:text-black text-base font-medium no-underline"
+                onClick={(e) => handleNavClick(e, "contact")}
+              >
+                Contacteaza-ne
+              </a>
+              <a
+                href="#solution"
+                className="text-black hover:text-black text-lg leading-tight font-medium no-underline"
+                onClick={(e) => handleNavClick(e, "solution")}
+              >
+                DATASIGHT <br /> SOLUTION
+              </a>
+
+              {/* Hamburger Menu Button */}
             </div>
-
-            {/* Desktop Navigation */}
-
-            <a
-              href="#about"
-              className="text-black/90 hover:text-black text-base font-medium no-underline"
-              onClick={(e) => handleNavClick(e, "about")}
+          </nav>
+          <div className="lg:hidden py-5 px-6 flex justify-between items-center">
+            <Image src={Logo} alt="Vantix logo" width={35} height={30} />
+            <h1 className="font-extralight text-2xl leading-normal text-black">
+              VANTIX
+            </h1>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              className="relative w-9 h-9 flex items-center justify-center bg-transparent border-0 focus:outline-none"
             >
-              Despre Noi
-            </a>
-            <a
-              href="#about"
-              className="text-black/90 hover:text-black text-base font-medium no-underline"
-              onClick={(e) => handleNavClick(e, "about")}
-            >
-              Echipa Vantix
-            </a>
-            <a
-              href="#contact"
-              className="text-black/90 hover:text-black text-base font-medium no-underline"
-              onClick={(e) => handleNavClick(e, "contact")}
-            >
-              Contacteaza-ne
-            </a>
-            <a
-              href="#solution"
-              className="text-black hover:text-black text-lg leading-tight font-medium no-underline"
-              onClick={(e) => handleNavClick(e, "solution")}
-            >
-              DATASIGHT <br /> SOLUTION
-            </a>
-
-            {/* Hamburger Menu Button */}
+              <div className="relative w-6 h-6">
+                <span
+                  className={`absolute top-1/2 left-0 block h-0.5 w-full bg-cyan-600 rounded transition-all duration-300 origin-center ${
+                    mobileMenuOpen ? "rotate-45" : "-translate-y-2"
+                  }`}
+                ></span>
+                <span
+                  className={`absolute top-1/2 left-0 block h-0.5 w-full bg-cyan-600 rounded transition-all duration-300 origin-center ${
+                    mobileMenuOpen ? "-rotate-45" : "translate-y-2"
+                  }`}
+                ></span>
+              </div>
+            </button>
           </div>
-        </nav>
-        <div className="lg:hidden py-5 px-6 flex justify-between items-center">
-          <Image src={Logo} alt="Vantix logo" width={35} height={30} />
-          <h1 className="font-extralight text-2xl leading-normal text-black">
-            VANTIX
-          </h1>
-          <button
-            className="btn-ghost relative w-9 h-9 flex items-center border-0 bg-transparent justify-center focus:outline-none group"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <div className="w-6 h-5 flex flex-col justify-between">
-              <span
-                className={`block h-0.5 w-full bg-cyan-600 transition-all duration-300 origin-center ${
-                  mobileMenuOpen ? "rotate-45 translate-y-2" : ""
-                }`}
-              ></span>
-              <span
-                className={`block h-0.5 w-full bg-cyan-600 transition-all duration-300 ${
-                  mobileMenuOpen ? "opacity-0 scale-0" : "opacity-100 scale-100"
-                }`}
-              ></span>
-              <span
-                className={`block h-0.5 w-full bg-cyan-600 transition-all duration-300 origin-center ${
-                  mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
-                }`}
-              ></span>
-            </div>
-          </button>
-        </div>
-
         </div>
 
         {/* Modern Mobile Menu Dropdown */}

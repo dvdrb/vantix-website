@@ -1,7 +1,39 @@
+"use client";
 import Image from "next/image";
+import { useRef, useEffect } from "react";
 import vantixLogo from "../../assets/photos/vantix-logo.svg";
 
 export default function ContactForm() {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleTextareaInput = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Ensure correct height on mount (e.g., after hydration or with prefilled values)
+    handleTextareaInput();
+
+    // Auto-resize on input/paste
+    textarea.addEventListener("input", handleTextareaInput);
+
+    // Recalculate on viewport resize because wrapping can change scrollHeight
+    const onResize = () => handleTextareaInput();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      textarea.removeEventListener("input", handleTextareaInput);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
   return (
     <div
       id="contact"
@@ -83,11 +115,12 @@ export default function ContactForm() {
 
             <div className="relative pt-4 min-w-[300px]">
               <textarea
+                ref={textareaRef}
                 id="message"
                 name="message"
-                className="peer w-full bg-transparent border-0 border-b border-black pb-2 outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent resize-y min-h-[48px]"
+                className="peer w-full bg-transparent border-0 border-b border-black  outline-none focus:border-[#2d7a9f] transition-colors text-base placeholder-transparent resize-none min-h-[20px] overflow-hidden"
                 placeholder="Mesajul dvs. (optional)"
-                rows={3}
+                rows={1}
               />
               <label
                 htmlFor="message"
@@ -126,7 +159,7 @@ export default function ContactForm() {
             </button>
           </form>
           {/* Contact Info Section */}
-          <div className="flex flex-col w-full border-t md:border-0 border-black justify-center mt-12 lg:mt-0 lg:pl-4">
+          <div className="flex flex-col w-full max-w-[300px] border-t md:border-0 border-black justify-center mt-12 lg:mt-0 lg:pl-4">
             <div className="space-y-4 md:border-l border-black lg:pl-4">
               <div>
                 <p className="md:text-xl text-base mb-0 font-normal">Email:</p>

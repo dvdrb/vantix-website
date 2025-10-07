@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useScrollTrigger } from "../hooks/useScrollTrigger";
 import AdrianPhoto from "../../assets/photos/adi-photo.png";
 import AlexPhoto from "../../assets/photos/alex-photo.png";
@@ -20,6 +20,18 @@ export default function AboutUsSection() {
 
   const [alexandruModalOpen, setAlexandruModalOpen] = useState(false);
   const [adrianModalOpen, setAdrianModalOpen] = useState(false);
+
+  // Close any open modal on Escape key
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAlexandruModalOpen(false);
+        setAdrianModalOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <>
@@ -107,27 +119,35 @@ export default function AboutUsSection() {
           <h4 className="text-2xl text-black [text-shadow:0_2px_4px_rgba(0,0,0,0.25)] font-normal leading-normal text-center mb-6 md:mb-[88px]">
             Board of Advisors
           </h4>
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col w-[184px] ">
-              <p className=" mt-0 text-sm mb-2 font-normal leading-normal text-black">
+          <div className="flex flex-col-reverse md:flex-row items-center md:items-start justify-between gap-6 md:gap-10">
+            <div className="flex-1 px-4 lg:px-0 max-w-sm">
+              <p className="mt-0 text-base md:text-sm mb-2 font-normal leading-normal text-black">
                 Radu Predescu
                 <br />
                 <span className="text-primary">Director Executiv</span>
               </p>
-              <p className="m-0 leading-5 text-sm text-secondary">
+              <p className="m-0 leading-6 md:leading-5 text-sm text-secondary">
                 Radu Predescu este Director Executiv al diviziei Autonom Lease,
                 cu peste 29 de ani de experiență, implicat anterior în
                 management vânzări și operațional.
               </p>
             </div>
 
-            <Image
-              src={RaduPhoto}
-              alt="Radu Predescu"
-              height={110}
-              width={100}
-              className="object-contain rounded-lg ms-2"
-            />
+            <div className="relative shrink-0">
+              {/* Glow background */}
+              <div
+                aria-hidden
+                className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br from-cyan-400/50 via-sky-400/30 to-transparent blur-2xl scale-110"
+              />
+              <Image
+                src={RaduPhoto}
+                alt="Radu Predescu"
+                width={140}
+                height={170}
+                className="relative w-[140px] h-[170px] object-cover rounded-2xl shadow-xl ring-1 ring-white/40"
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -135,18 +155,18 @@ export default function AboutUsSection() {
       {/* Alexandru Modal */}
       {alexandruModalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4  backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/20 backdrop-blur-md animate-fadeIn"
           onClick={() => setAlexandruModalOpen(false)}
         >
           <div
-            className="bg-modal rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleIn"
+            className="bg-modal rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleIn border border-white/30"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative p-6 md:p-8">
               {/* Close Button */}
               <button
                 onClick={() => setAlexandruModalOpen(false)}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="absolute top-4  border-0 bg-transparent right-4 w-8 h-8 flex items-center justify-center rounded-full text-black/70 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60"
                 aria-label="Close modal"
               >
                 <svg
@@ -196,18 +216,18 @@ export default function AboutUsSection() {
       {/* Adrian Modal */}
       {adrianModalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4  backdrop-blur-sm animate-fadeIn"
-          onClick={() => setAlexandruModalOpen(false)}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/20 backdrop-blur-md animate-fadeIn"
+          onClick={() => setAdrianModalOpen(false)}
         >
           <div
-            className="bg-modal rounded-2xl max-w-90vw w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleIn"
+            className="bg-modal rounded-2xl max-w-90vw w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleIn border border-white/30"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative p-6 md:p-8">
               {/* Close Button */}
               <button
-                onClick={() => setAlexandruModalOpen(false)}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={() => setAdrianModalOpen(false)}
+                className="absolute border-0 bg-transparent top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-black/70 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60"
                 aria-label="Close modal"
               >
                 <svg
