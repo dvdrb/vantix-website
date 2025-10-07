@@ -1,13 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import {
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Logo from "../../assets/photos/vantix-logo.svg";
 import { smoothScrollTo } from "../utils/smooth-scroll";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [spacerHeight, setSpacerHeight] = useState(0);
 
   const handleNavClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -27,14 +36,29 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Keep spacer in sync with header's visible bar height (not dropdown)
+  useEffect(() => {
+    const updateSpacer = () => {
+      const el = barRef.current;
+      if (el) setSpacerHeight(el.offsetHeight);
+    };
+    updateSpacer();
+    window.addEventListener("resize", updateSpacer);
+    // Recalculate when menu toggles since layout can slightly change
+    return () => window.removeEventListener("resize", updateSpacer);
+  }, [mobileMenuOpen]);
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-          hasScrolled ? "backdrop-blur-md shadow-sm" : ""
+        ref={headerRef}
+        className={`sticky md:fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300 bg-[rgba(245,245,245,0.9)] ${
+          hasScrolled ? "md:backdrop-blur-md shadow-sm border-b border-gray-200/60" : ""
         }`}
       >
-        <nav className="hidden lg:block max-w-7xl mx-auto px-6 lg:px-8 ">
+        {/* Header bar (measured for spacer) */}
+        <div ref={barRef}>
+        <nav className="hidden lg:block max-w-7xl mx-auto px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <Image src={Logo} alt="Vantix logo" width={52} height={45} />
@@ -107,6 +131,8 @@ export default function Header() {
           </button>
         </div>
 
+        </div>
+
         {/* Modern Mobile Menu Dropdown */}
         <div
           className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${
@@ -153,8 +179,8 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-20"></div>
+      {/* Spacer only for desktop where header is fixed */}
+      <div className="hidden md:block" style={{ height: spacerHeight }} />
     </>
   );
 }

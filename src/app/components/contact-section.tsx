@@ -10,19 +10,19 @@ export default function ContactForm() {
     >
       <div className="w-full max-w-5xl">
         {/* Logo and Title */}
-        <div className="flex items-center justify-center gap-6 mb-6">
+        <div className="flex items-center justify-center gap-6 mb-4">
           <h3 className="text-2xl text-black font-extralight">VANTIX</h3>
           <Image src={vantixLogo} alt="Vantix logo" width={35} height={30} />
         </div>
 
-        <h4 className="text-2xl leading-normal text-black text-center mt-0 mb-20 font-normal text-black">
+        <h4 className="text-2xl leading-normal text-black text-center mt-0 mb-10 font-normal text-black">
           Solicită un demo:
         </h4>
 
         <div className="flex items-center justify-center flex-col md:flex-row gap-0">
           {/* Form Section */}
           <form className="flex-1 flex flex-col max-w-[350px] gap-12 lg:pr-16">
-            <div className="relative pt-4">
+            <div className="relative pt-4 min-w-[300px]">
               <input
                 type="text"
                 id="fullName"
@@ -42,7 +42,7 @@ export default function ContactForm() {
               </label>
             </div>
 
-            <div className="relative pt-4">
+            <div className="relative pt-4 min-w-[300px]">
               <input
                 type="email"
                 id="email"
@@ -62,7 +62,7 @@ export default function ContactForm() {
               </label>
             </div>
 
-            <div className="relative pt-4">
+            <div className="relative pt-4 min-w-[300px]">
               <input
                 type="tel"
                 id="phone"
@@ -81,7 +81,7 @@ export default function ContactForm() {
               </label>
             </div>
 
-            <div className="relative pt-4">
+            <div className="relative pt-4 min-w-[300px]">
               <textarea
                 id="message"
                 name="message"
@@ -99,7 +99,7 @@ export default function ContactForm() {
               </label>
             </div>
 
-            <div className="relative pt-4">
+            <div className="relative pt-4 min-w-[300px]">
               <input
                 type="text"
                 id="company"
@@ -126,8 +126,8 @@ export default function ContactForm() {
             </button>
           </form>
           {/* Contact Info Section */}
-          <div className="flex flex-col border-t md:border-0 border-black justify-center mt-12 lg:mt-0 lg:pl-4">
-            <div className="space-y-4 md:border-l border-black pl-4">
+          <div className="flex flex-col w-full border-t md:border-0 border-black justify-center mt-12 lg:mt-0 lg:pl-4">
+            <div className="space-y-4 md:border-l border-black lg:pl-4">
               <div>
                 <p className="md:text-xl text-base mb-0 font-normal">Email:</p>
                 <a
